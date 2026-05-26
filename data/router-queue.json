@@ -1,0 +1,126 @@
+[
+  {
+    "requestId": "route_1771317931135_61v5qh",
+    "lane": "gemini",
+    "task": "Test task from verification",
+    "metadata": {
+      "source": "curl"
+    },
+    "queuedAt": "2026-02-17T08:45:31.146Z",
+    "status": "queued",
+    "attempts": [
+      {
+        "lane": "gemini",
+        "modelStrategy": "gemini-3.0-pro",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed"
+      },
+      {
+        "lane": "claude",
+        "modelStrategy": "claude-opus-4.5",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed"
+      },
+      {
+        "lane": "minimax",
+        "modelStrategy": "minimax",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed"
+      },
+      {
+        "lane": "kimi",
+        "modelStrategy": "kimi-k2.5",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed"
+      },
+      {
+        "lane": "gemini",
+        "modelStrategy": "gemini-3.0-pro",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed",
+        "attemptedAt": "2026-02-17T08:50:06.526Z"
+      },
+      {
+        "lane": "claude",
+        "modelStrategy": "claude-opus-4.5",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed",
+        "attemptedAt": "2026-02-17T08:50:06.527Z"
+      },
+      {
+        "lane": "minimax",
+        "modelStrategy": "minimax",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed",
+        "attemptedAt": "2026-02-17T08:50:06.528Z"
+      },
+      {
+        "lane": "kimi",
+        "modelStrategy": "kimi-k2.5",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed",
+        "attemptedAt": "2026-02-17T08:50:06.529Z"
+      }
+    ],
+    "retryCount": 1,
+    "lastRetryAt": "2026-02-17T08:50:06.529Z",
+    "succeededAt": null,
+    "failedAt": "2026-02-17T08:50:06.529Z",
+    "lastError": "fetch failed"
+  },
+  {
+    "requestId": "route_1771318210522_wpbo0d",
+    "lane": "gemini",
+    "task": "retry worker verification",
+    "metadata": {},
+    "queuedAt": "2026-02-17T08:50:10.597Z",
+    "status": "queued",
+    "attempts": [
+      {
+        "lane": "gemini",
+        "modelStrategy": "gemini-3.0-pro",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed",
+        "attemptedAt": "2026-02-17T08:50:10.593Z"
+      },
+      {
+        "lane": "claude",
+        "modelStrategy": "claude-opus-4.5",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed",
+        "attemptedAt": "2026-02-17T08:50:10.595Z"
+      },
+      {
+        "lane": "minimax",
+        "modelStrategy": "minimax",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed",
+        "attemptedAt": "2026-02-17T08:50:10.596Z"
+      },
+      {
+        "lane": "kimi",
+        "modelStrategy": "kimi-k2.5",
+        "ok": false,
+        "status": 0,
+        "error": "fetch failed",
+        "attemptedAt": "2026-02-17T08:50:10.597Z"
+      }
+    ],
+    "retryCount": 0,
+    "lastRetryAt": null,
+    "succeededAt": null,
+    "failedAt": "2026-02-17T08:50:10.597Z",
+    "lastError": "fetch failed"
+  }
+]

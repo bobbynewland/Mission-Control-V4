@@ -1,0 +1,36 @@
+{
+  "scrapedAt": "2026-03-22T10:05:27.255Z",
+  "categories": [
+    {
+      "name": "product",
+      "url": "https://www.meigen.ai/?category=product",
+      "promptCount": 11,
+      "success": true
+    },
+    {
+      "name": "photography",
+      "url": "https://www.meigen.ai/?category=photography",
+      "promptCount": 11,
+      "success": true
+    },
+    {
+      "name": "illustration-3d",
+      "url": "https://www.meigen.ai/?category=illustration",
+      "promptCount": 11,
+      "success": true
+    },
+    {
+      "name": "food-drink",
+      "url": "https://www.meigen.ai/?category=food",
+      "promptCount": 11,
+      "success": true
+    },
+    {
+      "name": "girl",
+      "url": "https://www.meigen.ai/?category=girl",
+      "promptCount": 11,
+      "success": true
+    }
+  ],
+  "totalPrompts": 55
+}

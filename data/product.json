@@ -1,0 +1,118 @@
+{
+  "scrapedAt": "2026-03-22T10:04:25.012Z",
+  "url": "https://www.meigen.ai/?category=product",
+  "category": "product",
+  "totalPrompts": 11,
+  "prompts": [
+    {
+      "index": 0,
+      "title": "You are a world class creative director, brand strategist...",
+      "prompt": "You are a world class creative director, brand strategist...\n\nYou are a world class creative director, brand strategist, editorial art director, and visual identity designer specializing in high impact campaign systems for global brands. Your task is to create a bold, visually explosive, highly curated editorial moodboard collage composition that feels like a modern brand identity system. This should feel like a brand world captured in one frame, not a clean layout, slightly chaotic, layered, and expressive. BRAND INPUTS: BRAND NAME: GLOSSIER INDUSTRY / PRODUCT TYPE: beauty / skincare PRIMARY BRAND COLOR: soft pink SECONDARY BRAND COLOR: white ACCENT COLOR (optional): translucent gloss BRAND PERSONALITY: fresh, minimal, youthful, clean OPTIONAL SLOGAN / TEXT: SKIN FIRST VISUAL STYLE: Create a dense, layered moodboard-style composition combining: • real product photography or lifestyle shots • packaging elements (bags, boxes, labels, tags) • typography snippets and brand phrases • illustrated graphics and doodles • icons, symbols, and stickers • abstract graphic shapes and patterns • UI-like elements (menus, cards, labels) • editorial cutouts and overlapping assets The composition should feel: • slightly messy but intentionally designed • layered with depth and overlaps • like a Pinterest board meets high-end campaign • expressive, youthful, and brand-heavy • visually rich and scroll-stopping ART DIRECTION: Include a mix of elements such as: • product packaging mockups (bags, boxes, labels, stickers) • lifestyle shot (person interacting with product or brand) • bold typography blocks with brand phrases • illustrated objects interacting with real elements • menu-style or UI-style panels • abstract shapes, blobs, squiggles, starbursts • brand-related icons or symbols • badge / stamp graphics • textile or merch items (t-shirt, cap, tote bag, etc.) • playful graphic overlays COMPOSITION RULES: • asymmetrical layout (NOT grid-based) • elements scattered but balanced • overlapping layers with depth • mix of large hero elements + small details • combine clean areas with dense clusters • include cutout-style compositions • avoid too much empty space COLOR & DESIGN LANGUAGE: • strictly follow brand color palette • strong use of PRIMARY COLOR across elements • secondary color used for contrast and layering • minimal additional colors (keep it brand-consistent) • high contrast, bold visual identity TYPOGRAPHY: • modern editorial typography • mix of serif / sans-serif if relevant • bold headlines + small UI text • include brand name and/or slogan naturally in layout • typography should feel integrated, not separate VISUAL CHARACTERISTICS: • premium campaign look • modern brand identity system • editorial + commercial hybrid aesthetic • highly shareable social media visual • playful but intentional chaos • cohesive even in randomness IMPORTANT: This should feel like: • a brand world explosion in one frame • a creative direction board for a global campaign • a visual identity snapshot of the brand NOT a clean layout NOT a grid NOT minimal It must feel alive, layered, and expressive.",
+      "author": "Ege",
+      "authorHandle": "egeberkina",
+      "likes": "43",
+      "views": "5.8K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 1,
+      "title": "CORE OBJECTIVE: Create a professional 8k studio editorial...",
+      "prompt": "CORE OBJECTIVE: Create a professional 8k studio editorial...\n\nCORE OBJECTIVE: Create a professional 8k studio editorial based on [ATTACHED_INPUT_IMAGE]. Analyze subject geometry, material, and branding to maintain logic across 7 seamless panels. STEP 1: DYNAMIC ANALYSIS Identify: Subject, logo (or name), and material. Material Logic: Tech (sharp rim lights), Glass (refraction/caustics), Organic (soft light), Fashion (matte/satin sheen). COMPOSITION & STRUCTURE Single seamless image. Top: 1 Hero Panel. Bottom: 2x3 Grid (6 panels). Total 7 views. No text or borders (except Frame 2). PANEL SPECIFICATIONS MAIN HERO: Centered master portrait on infinite-curve background. Lighting highlights primary material. F1 (Macro): Extreme close-up on material \"DNA\" (microscopic grain, textures, or circuitry). F2 (Logo): 3D premium brand emblem centered on a minimalist studio backdrop. F3 (Scale): Subject in size-appropriate context (gallery for large, pedestal for small). F4 (Rhythm): High-angle \"knolling\" or grid repetition of components. F5 (Motion): Weightless action-still with environmental cues (vapor, sparks, or splashes). F6 (Form): High-contrast rim-lit profile focusing purely on the iconic silhouette. VISUAL ENFORCEMENT Style: Ultra-high-end Studio Editorial. Consistency: 100% identical color and design details across all views. Technical: 8k, ray-traced reflections, professional grading, global illumination.",
+      "author": "Firat Bilal",
+      "authorHandle": "firatbilal",
+      "likes": "191",
+      "views": "14.2K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 2,
+      "title": "A hyper-realistic 3D anatomical human [organ] made from s...",
+      "prompt": "A hyper-realistic 3D anatomical human [organ] made from s...\n\nA hyper-realistic 3D anatomical human [organ] made from semi-translucent frosted polycarbonate with a milky matte finish, softly diffusing light. Industrial injection-molded detailing, subtle micro-texture, and rounded edges with precision seams. Inside, intricate mechanical components replace organic tissue, micro gears, pistons, circuitry, and engineered chambers visible but softly blurred through the shell. A subtle white Apple logo is naturally embedded on the surface, minimal and not overly obvious. Soft diffused studio lighting, realistic plastic refraction, subtle shadow beneath, centered composition, pure white background, ultra-detailed futuristic biomechanical render, 1:1 aspect ratio.",
+      "author": "Amira Zairi",
+      "authorHandle": "azed_ai",
+      "likes": "329",
+      "views": "24.9K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 3,
+      "title": "You are a world class creative director, brand strategist...",
+      "prompt": "You are a world class creative director, brand strategist...\n\nYou are a world class creative director, brand strategist, editorial art director, and visual identity designer specializing in high impact campaign systems for global fintech and technology brands. Your task is to create a bold, intelligent, visually striking campaign board that feels like a professional brand identity presentation for a modern fintech startup. Create a campaign layout composed of multiple tiles arranged in a dynamic brand grid layout (not a strict 3x3 grid). LAYOUT STRUCTURE: Top Row • one wide landscape hero tile • one square tile Middle Row • three square tiles Bottom Row • one square tile on the left • one wide landscape tile on the right Each tile should look like a piece of a professional brand campaign or identity board. BRAND NAME: [INSERT BRAND NAME] PRIMARY BRAND COLOR: [INSERT COLOR] SECONDARY BRAND COLOR: [INSERT COLOR] ACCENT COLOR: [INSERT COLOR] APP NAME: [INSERT APP NAME] OPTIONAL SLOGAN: [INSERT SLOGAN] PRODUCT TYPE: digital bank / fintech app / payment platform / neobank / crypto wallet / financial platform VISUAL STYLE: Modern fintech brand campaign mixing: • lifestyle photography • fintech product shots • smartphone UI screens • credit card product visuals • bold brand color graphics • abstract tech textures • minimal brand design layouts • outdoor advertising visuals The aesthetic should feel like a hybrid between: Stripe Nubank Cash App Revolut modern startup branding premium tech product advertising ART DIRECTION: The grid should combine multiple brand communication assets such as: • hero brand visual • mobile app interface • credit card product shot • lifestyle photos of people using the app • brand merchandise • color palette graphics • billboard campaign mockups • technology inspired abstract visuals Each tile should feel unique but visually cohesive within the same brand system. TILE IDEAS: TOP LANDSCAPE TILE Abstract fintech hero visual using brand colors with glass / liquid / digital textures and the brand logo centered. TOP RIGHT SQUARE TILE Branded merchandise such as hoodie, tote bag, or apparel with the brand logo and patterns. MIDDLE LEFT TILE Smartwatch or smartphone displaying the fintech app UI. MIDDLE CENTER TILE Close-up iPhone screen showing the fintech app dashboard. MIDDLE RIGHT TILE Brand color palette tile showing the official colors and minimal identity elements. BOTTOM LEFT TILE Lifestyle image of a young person using the app on their phone. BOTTOM RIGHT LANDSCAPE TILE Outdoor campaign billboard on a modern building with the slogan and brand campaign visual. VISUAL CHARACTERISTICS: • premium fintech branding • modern startup identity • bold brand color usage • editorial lifestyle photography • clean UI design visuals • modern advertising aesthetic • cohesive brand campaign system • high-end commercial photography IMPORTANT: This board should feel like a professional brand launch presentation for a global fintech company. Each tile should look like a different campaign asset but visually belong to the same brand identity system. AI GENERATION NOTES: clean modern layout brand presentation board design system grid minimal spacing between tiles professional brand identity board balanced grid composition premium advertising photography ultra high detail visualized as a modern startup brand identity board similar to a design presentation on Behance or Dribbble, cohesive campaign layout",
+      "author": "Ege",
+      "authorHandle": "egeberkina",
+      "likes": "65",
+      "views": "4.8K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 4,
+      "title": "You are a world class creative director, brand strategist...",
+      "prompt": "You are a world class creative director, brand strategist...\n\nYou are a world class creative director, brand strategist, editorial art director, and visual identity designer specializing in high impact campaign systems for global brands. Your task is to create a bold, visually explosive, highly curated editorial moodboard collage composition that feels like a modern brand identity system. This should feel like a brand world captured in one frame, not a clean layout, slightly chaotic, layered, and expressive. BRAND INPUTS: BRAND NAME: GLOSSIER INDUSTRY / PRODUCT TYPE: beauty / skincare PRIMARY BRAND COLOR: soft pink SECONDARY BRAND COLOR: white ACCENT COLOR (optional): translucent gloss BRAND PERSONALITY: fresh, minimal, youthful, clean OPTIONAL SLOGAN / TEXT: SKIN FIRST VISUAL STYLE: Create a dense, layered moodboard-style composition combining: • real product photography or lifestyle shots • packaging elements (bags, boxes, labels, tags) • typography snippets and brand phrases • illustrated graphics and doodles • icons, symbols, and stickers • abstract graphic shapes and patterns • UI-like elements (menus, cards, labels) • editorial cutouts and overlapping assets The composition should feel: • slightly messy but intentionally designed • layered with depth and overlaps • like a Pinterest board meets high-end campaign • expressive, youthful, and brand-heavy • visually rich and scroll-stopping ART DIRECTION: Include a mix of elements such as: • product packaging mockups (bags, boxes, labels, stickers) • lifestyle shot (person interacting with product or brand) • bold typography blocks with brand phrases • illustrated objects interacting with real elements • menu-style or UI-style panels • abstract shapes, blobs, squiggles, starbursts • brand-related icons or symbols • badge / stamp graphics • textile or merch items (t-shirt, cap, tote bag, etc.) • playful graphic overlays COMPOSITION RULES: • asymmetrical layout (NOT grid-based) • elements scattered but balanced • overlapping layers with depth • mix of large hero elements + small details • combine clean areas with dense clusters • include cutout-style compositions • avoid too much empty space COLOR & DESIGN LANGUAGE: • strictly follow brand color palette • strong use of PRIMARY COLOR across elements • secondary color used for contrast and layering • minimal additional colors (keep it brand-consistent) • high contrast, bold visual identity TYPOGRAPHY: • modern editorial typography • mix of serif / sans-serif if relevant • bold headlines + small UI text • include brand name and/or slogan naturally in layout • typography should feel integrated, not separate VISUAL CHARACTERISTICS: • premium campaign look • modern brand identity system • editorial + commercial hybrid aesthetic • highly shareable social media visual • playful but intentional chaos • cohesive even in randomness IMPORTANT: This should feel like: • a brand world explosion in one frame • a creative direction board for a global campaign • a visual identity snapshot of the brand NOT a clean layout NOT a grid NOT minimal It must feel alive, layered, and expressive.",
+      "author": "Ege",
+      "authorHandle": "egeberkina",
+      "likes": "50",
+      "views": "3.4K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 5,
+      "title": "[BRAND]. A high fashion campaign poster. A model with a s...",
+      "prompt": "BRAND]. A high fashion campaign poster. A model with a s...\n\n[BRAND]. A high fashion campaign poster. A model with a strong expressive face as the centerpiece, wearing a signature outfit in the brand's exact official color palette. Dramatic surreal atmospheric background. Layered collage of torn-edge material swatches surrounding the model. Brand's iconic symbol woven into the scene. Logo overlaid in the center in clean serif font. Macro detail on fabric texture and stitching. Cinematic lighting, rich contrast, 8K",
+      "author": "AI Pulse",
+      "authorHandle": "youraipulse",
+      "likes": "236",
+      "views": "20.1K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 6,
+      "title": "High-quality stylized 3D CGI Pixar-style render, vertical...",
+      "prompt": "High-quality stylized 3D CGI Pixar-style render, vertical...\n\nHigh-quality stylized 3D CGI Pixar-style render, vertical 3:4 composition, the most iconic characters from [SHOW/MOVIE] captured as a chaotic and joyful bathroom mirror selfie; the most recognizable character holds a large vintage camera up toward the mirror, the remaining characters squeezed tightly into the frame around them, each showing their most signature expression or pose; everyone wearing their most iconic costumes and outfits faithful to the source material; all crammed together creating classic crowded selfie energy; facial proportions gently stylized in Disney/Pixar animation style with expressive eyes while faithfully preserving each character's most recognizable traits, hairstyles and costumes from [SHOW/MOVIE]; the bathroom mirror has realistic toothpaste splatters and subtle smudges; the reflection shows bold black Pixar-style lettering reading \"[SHOW/MOVIE]❤️\"; the bathroom background is styled to match the world of [SHOW/MOVIE] with thematic props and easter eggs relevant to [SHOW/MOVIE] placed naturally around the scene; lighting combines soft ambient bathroom lighting with a bright camera flash reflecting in the mirror creating gentle specular highlights; warm Pixar-style color grading faithful to the visual tone of [SHOW/MOVIE], smooth highlight rolloff, refined Disney/Pixar cinematic character shading, ultra-detailed 4K render, no watermark",
+      "author": "TechieSA",
+      "authorHandle": "TechieBySA",
+      "likes": "742",
+      "views": "60.2K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 7,
+      "title": "[BRAND NAME]: The name of the brand.",
+      "prompt": "BRAND NAME]: The name of the brand.\n\n[BRAND NAME]: The name of the brand. Goal: Generate a single, minimalist, and surreal image where a cloud is shaped like the brand's logo. 1. THE LOGO CLOUD - **Subject**: A massive, photorealistic cumulus cloud in the exact geometric shape of the [BRAND NAME] logo. - **Texture**: Puffy, soft, and voluminous with natural sunlight illuminating the edges. - **Volume**: 3D sculptural appearance with realistic shadows within the cloud folds to show depth. 2. ENVIRONMENT & BACKGROUND - **Sky**: A vast, clear, vibrant blue summer sky. - **Secondary Elements**: A few small, wispy, natural clouds scattered far in the background to enhance the sense of scale and realism. - **Lighting**: Bright, direct daylight coming from the side to create high-contrast highlights and shadows. 3. INTEGRATED BRANDING - **Text**: The word \"[BRAND NAME]\" written in a clean, bold white sans-serif font. - **Icon**: A small, flat white version of the brand's logo placed next to the text. - **Positioning**: The branding (text + logo) is centered at the bottom of the frame, acting as a subtle anchor to the giant cloud above. 4. STYLE - Surrealist photography, ultra-minimalist composition, high resolution, 8k, cinematic look, clean and airy vibe.",
+      "author": "AmirMušić",
+      "authorHandle": "AmirMushich",
+      "likes": null,
+      "views": null,
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 8,
+      "title": "[BRAND NAME]: Enter the brand name here.",
+      "prompt": "BRAND NAME]: Enter the brand name here.\n\n[BRAND NAME]: Enter the brand name here. Goal: Generate a minimalist organic image where a stylized logo icon of [BRAND NAME] is transformed into a large moss-textured artifact, with a small brand signature at the bottom. Constraint: NO TEXT inside or immediately near the central moss icon. Only the bottom signature. 1. THE CENTRAL MOSS ICON - Main Subject: A large, geometrically precise symbol, sculpted into the exact form of the [BRAND NAME] logo icon. - Material: The symbol is entirely made of dense, heavily textured, natural green stabilizing moss. The texture is rough and organic with varying shades of green and brown. - Form: The geometric edges are sharp and clean, but filled with the soft, billowy texture of moss. 2. ENVIRONMENT & LAYOUT - View: A top-down, central flat lay view. - Background: A flawless, uniform, matte white studio background. Full minimalist negative space. - Lighting: Bright, soft, diffused studio lighting that emphasizes the tactile moss texture while minimizing harsh shadows. 3. BOTTOM BRAND SIGNATURE (CRITICAL) - Placement: A clean horizontal signature block centered at the bottom, far below the moss icon. - Elements: A tiny, flat, minimalist version of the [BRAND NAME] logo icon on the left. - Text: The word \"[BRAND NAME]\" in a clean, bold, black sans-serif typeface immediately to the right of the tiny logo. - Scale: The signature must be very small compared to the central moss artifact. 4. AESTHETIC - Biophilic design, premium product photography, clean, fresh, airy, high-end editorial look. 8k resolution.",
+      "author": "AmirMušić",
+      "authorHandle": "AmirMushich",
+      "likes": "652",
+      "views": "33.1K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 9,
+      "title": "An extreme close-up, high-fashion editorial portrait focu...",
+      "prompt": "An extreme close-up, high-fashion editorial portrait focu...\n\nAn extreme close-up, high-fashion editorial portrait focusing on the right side of a person's face. The composition is a tight crop showing the bridge of the nose, a portion of the lips, and a single eye peering through sunglasses. The shot is characterized by a heavy, cinematic film grain and a warm, sophisticated studio atmosphere. Eyewear: Large-frame, wrap-around sunglasses made of high-gloss dark tortoiseshell acetate (mottled black and deep mahogany). The lenses are a vibrant, translucent amber-orange, allowing the eye and eyelashes behind the lens to remain visible but color-tinted. Person: A person with smooth skin showing natural texture and fine pores. The lighting is soft-side lighting from the right, creating a gentle shadow on the left side of the nose and a subtle highlight on the cheekbone and lower lip. Typography: Bold, white, geometric sans-serif text reading \"Bold Impact\" is overlaid on the lower-right cheek. Three smaller, delicate labels are scattered: \"Deep Tones\" (top right), \"Sharp Detail\" (on the left lens), and \"Strong Style\" (bottom right). Color Palette: A rich mix of skin tones (#E8A88A), burnt orange (#B8541C), and deep espresso (#1A0D0B), contrasted with crisp white text (#FFFFFF). Lighting: Warm studio lighting with a soft-focus depth of field. The background consists of out-of-focus hair and skin, keeping all attention on the eye and the texture of the acetate frames. Atmosphere: Premium, editorial fashion magazine aesthetic; high-contrast but with soft transitions.",
+      "author": "Heisenberg",
+      "authorHandle": "rovvmut_",
+      "likes": "150",
+      "views": "6.4K",
+      "model": "Nanobanana Pro"
+    },
+    {
+      "index": 10,
+      "title": "Using the uploaded selfie as the ONLY and exclusive face ...",
+      "prompt": "Using the uploaded selfie as the ONLY and exclusive face ...\n\nUsing the uploaded selfie as the ONLY and exclusive face reference, generate a Pixar-style 3D character sticker set. The character must be clearly recognizable as the person from the selfie. Create a neat 3×3 grid collage (nine stickers total). Final aspect ratio is strictly 4:5. Each cell shows a distinct pose and facial expression. Style and tone: Pixar-style 3D animation with a meme-oriented feel. Exaggerated, slightly absurd emotions, playful overacting. Highly readable expressions at small sizes, with expressive eyes, eyebrows, and mouth. Subtle hand gestures where appropriate. Background and output: Fully transparent background (PNG). No backdrop, no background shadows. No text, captions, logos, or UI elements. Stickers must be ready for direct use in messengers. Consistency: Same hairstyle, clothing, colors, and character proportions across all nine stickers. Only facial expression and pose change. Clean, polished 3D sticker look. Emotions (one per sticker, 3×3 grid): Surprised, Annoyed, Confused, Frustrated, Thoughtful, Sarcastic, Worried, Bored, Curious.",
+      "author": "Oogie",
+      "authorHandle": "oggii_0",
+      "likes": "804",
+      "views": "40.6K",
+      "model": "Nanobanana Pro"
+    }
+  ]
+}
