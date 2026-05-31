@@ -205,34 +205,6 @@ const Today = ({ onNavigate }) => {
 
   const loadCalendar = async () => {
     try {
-      // Firebase sync helper - same as Calendar.jsx
-      const syncFromFirebase = async () => {
-        try {
-          if (typeof firebase === 'undefined' || !firebase.database) return null;
-          const snapshot = await firebase.database().ref('workspaces/winslow_main/auth/calendar').once('value');
-          const data = snapshot.val();
-          if (data && data.accessToken && data.refreshToken) {
-            localStorage.setItem('mc3_calendar_token', data.accessToken);
-            localStorage.setItem('mc3_calendar_refresh', data.refreshToken);
-            localStorage.setItem('mc3_calendar_expiry', data.expiry.toString());
-            return data;
-          }
-        } catch (err) { console.error('Firebase sync error:', err); }
-        return null;
-      };
-
-      let token = localStorage.getItem('mc3_calendar_token');
-      let tokenExpiry = localStorage.getItem('mc3_calendar_expiry');
-      
-      // Try Firebase if no local token
-      if (!token && !tokenExpiry) {
-        const fbData = await syncFromFirebase();
-        if (fbData) {
-          token = fbData.accessToken;
-          tokenExpiry = fbData.expiry;
-        }
-      }
-      
       // Check for cached calendar events with validation
       try {
         const cached = localStorage.getItem('mc3_calendar_events');
@@ -240,95 +212,32 @@ const Today = ({ onNavigate }) => {
           const events = JSON.parse(cached);
           if (Array.isArray(events)) {
             setCalendarEvents(events);
-            setCalendarConnected(!!token && tokenExpiry && Date.now() < parseInt(tokenExpiry));
           }
         }
       } catch (e) {
         console.log('Calendar cache parse error, ignoring cache');
         try { localStorage.removeItem('mc3_calendar_events'); } catch (e) {}
       }
-      
-      // If we have a valid token, try to fetch fresh data
-      if (token && tokenExpiry && Date.now() < parseInt(tokenExpiry) - (5 * 60 * 1000)) {
-        try {
-          const res = await fetch('/api/calendar/events?days=30&maxResults=50', { 
-            cache: 'no-store',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.events && Array.isArray(data.events)) {
-              setCalendarEvents(data.events);
-              setCalendarConnected(true);
-              localStorage.setItem('mc3_calendar_events', JSON.stringify(data.events));
-            }
-          } else if (res.status === 401) {
-            // Token expired - try refresh
-            const refreshToken = localStorage.getItem('mc3_calendar_refresh');
-            if (refreshToken) {
-              try {
-                const refreshRes = await fetch('/api/auth/google?action=refresh', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ refresh_token: refreshToken })
-                });
-                if (refreshRes.ok) {
-                  const tokenData = await refreshRes.json();
-                  if (tokenData.access_token) {
-                    const newExpiry = tokenData.expiry || (Date.now() + (tokenData.expires_in * 1000));
-                    localStorage.setItem('mc3_calendar_token', tokenData.access_token);
-                    localStorage.setItem('mc3_calendar_expiry', newExpiry.toString());
-                    // Save to Firebase
-                    try {
-                      if (typeof firebase !== 'undefined' && firebase.database) {
-                        await firebase.database().ref('workspaces/winslow_main/auth/calendar').set({
-                          accessToken: tokenData.access_token,
-                          refreshToken: tokenData.refresh_token || refreshToken,
-                          expiry: newExpiry,
-                          updatedAt: Date.now()
-                        });
-                      }
-                    } catch(e) { /* ignore */ }
-                    // Retry fetch with new token
-                    const retryRes = await fetch('/api/calendar/events?days=30&maxResults=50', { 
-                      cache: 'no-store',
-                      headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
-                    });
-                    if (retryRes.ok) {
-                      const data = await retryRes.json();
-                      if (data.events) {
-                        setCalendarEvents(data.events);
-                        setCalendarConnected(true);
-                        localStorage.setItem('mc3_calendar_events', JSON.stringify(data.events));
-                      }
-                    }
-                  }
-                } else {
-                  throw new Error('Refresh failed');
-                }
-              } catch(refreshErr) {
-                console.log('Token refresh failed:', refreshErr);
-                setCalendarConnected(false);
-                localStorage.removeItem('mc3_calendar_token');
-                localStorage.removeItem('mc3_calendar_expiry');
-              }
-            } else {
-              setCalendarConnected(false);
-              localStorage.removeItem('mc3_calendar_token');
-              localStorage.removeItem('mc3_calendar_expiry');
-            }
-          }
-        } catch (fetchErr) {
-          console.log('Calendar API fetch error:', fetchErr);
+
+      const res = await fetch('/api/calendar/events?days=30&maxResults=50', { 
+        cache: 'no-store'
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.connected && data.events && Array.isArray(data.events)) {
+          setCalendarEvents(data.events);
+          setCalendarConnected(true);
+          localStorage.setItem('mc3_calendar_events', JSON.stringify(data.events));
+        } else {
+          setCalendarConnected(false);
         }
-      } else if (token && tokenExpiry) {
-        // Token expired
-        setCalendarConnected(false);
+      } else {
+        if (res.status === 401) setCalendarConnected(false);
+        console.log('Calendar API fetch failed:', res.status);
       }
     } catch (e) {
-      console.log('Calendar loading error');
+      console.log('Calendar loading error:', e);
     }
   };
 

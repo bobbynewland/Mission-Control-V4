@@ -21,6 +21,7 @@ import {
   Cloud
 } from 'lucide-react';
 import { db } from '../lib/firebase';
+import { confirmAction } from '../lib/dialogs';
 
 const KnowledgeBase = () => {
   const [items, setItems] = useState([]);
@@ -152,8 +153,13 @@ const KnowledgeBase = () => {
     setEditingItem(null);
   };
 
-  const deleteItem = (id) => {
-    if (!confirm('Delete this knowledge item?')) return;
+  const deleteItem = async (id) => {
+    const confirmed = await confirmAction('Delete this knowledge item?', {
+      title: 'Delete Knowledge Item',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
     setItems(items.filter(i => i.id !== id));
     if (selectedItem?.id === id) setSelectedItem(null);
   };

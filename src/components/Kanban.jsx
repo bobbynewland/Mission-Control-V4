@@ -35,6 +35,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { database, onValue, push, ref, remove, set, storageService, update } from '../lib/firebase';
+import { confirmAction, notify } from '../lib/dialogs';
 
 const BOARD_PATH = 'workspaces/winslow_main/tasks';
 
@@ -376,7 +377,7 @@ export default function Kanban() {
       const fileRef = push(ref(database, `${BOARD_PATH}/${selectedTask.id}/files`));
       await set(fileRef, { name: file.name, url, type: file.type, uploadedAt: Date.now() });
     } catch {
-      alert('Upload failed');
+      await notify('Upload failed.', { title: 'Upload Error' });
     } finally {
       setUploading(false);
     }
@@ -549,7 +550,13 @@ export default function Kanban() {
             <button onClick={() => setIsEditing(true)} className="flex-1 bg-white text-black rounded-xl py-3 font-black uppercase text-xs tracking-widest">Edit</button>
             <button
               onClick={async () => {
-                if (!selectedTask?.id || !confirm('Delete task?')) return;
+                if (!selectedTask?.id) return;
+                const confirmed = await confirmAction('Delete task?', {
+                  title: 'Delete Task',
+                  confirmLabel: 'Delete',
+                  tone: 'danger'
+                });
+                if (!confirmed) return;
                 await remove(ref(database, `${BOARD_PATH}/${selectedTask.id}`));
                 setSelectedTask(null);
               }}

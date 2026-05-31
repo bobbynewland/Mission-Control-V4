@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, X, Lightbulb, CheckSquare, FileText, Send, Zap } from 'lucide-react';
 import { database, ref, push, update } from '../lib/firebase';
+import { notify } from '../lib/dialogs';
 
 const BOARD_PATH = 'workspaces/winslow_main/tasks';
 const NOTES_PATH = 'workspaces/winslow_main/notes';
@@ -54,7 +55,7 @@ const QuickCapture = () => {
       setTimeout(() => setSaved(false), 2000);
     } catch (error) {
       console.error('QuickCapture Error:', error);
-      alert('Failed to save. Check console.');
+      await notify('Failed to save. Check console.', { title: 'Save Failed' });
     } finally {
       setSaving(false);
     }

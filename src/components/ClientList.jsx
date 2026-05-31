@@ -9,6 +9,7 @@ import {
   Folder
 } from 'lucide-react';
 import { db } from '../lib/firebase';
+import { notify } from '../lib/dialogs';
 
 const ClientList = () => {
   const [clients, setClients] = useState([]);
@@ -88,7 +89,7 @@ const ClientList = () => {
       setShowAddClient(false);
     } catch (err) {
       console.error('Failed to add client:', err);
-      alert('Failed to add client. Please try again.');
+      await notify('Failed to add client. Please try again.', { title: 'Client Error' });
     } finally {
       setIsCreating(false);
     }

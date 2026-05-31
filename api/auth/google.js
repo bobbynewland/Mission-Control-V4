@@ -106,9 +106,6 @@ async function handleCallback(req, res) {
     return res.redirect('/?error=no_refresh_token');
   }
 
-  // Store tokens - properly escape for HTML/JS safety
-  const safeAccessToken = (tokens.access_token || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-  const safeRefreshToken = (tokens.refresh_token || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
   const safeExpiry = Date.now() + (tokens.expires_in * 1000);
 
   // Persist to Firebase RTDB via REST (server-side) so it works even when `firebase` isn't available in-browser.
@@ -134,8 +131,10 @@ async function handleCallback(req, res) {
     <head>
       <title>Calendar Connected</title>
       <script>
-        localStorage.setItem('mc3_calendar_token', '${safeAccessToken}');
-        localStorage.setItem('mc3_calendar_refresh', '${safeRefreshToken}');
+        localStorage.removeItem('mc3_calendar_token');
+        localStorage.removeItem('mc3_calendar_refresh');
+        sessionStorage.removeItem('mc3_calendar_refresh_backup');
+        localStorage.setItem('mc3_calendar_connected', 'true');
         localStorage.setItem('mc3_calendar_expiry', '${safeExpiry}');
         window.location.href = '/?calendar=connected';
       </script>

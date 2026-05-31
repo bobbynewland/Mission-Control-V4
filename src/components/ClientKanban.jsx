@@ -34,6 +34,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { database, onValue, push, ref, remove, set, update } from '../lib/firebase';
+import { confirmAction } from '../lib/dialogs';
 
 const BOARD_PATH = 'workspaces/winslow_main/tasks';
 
@@ -446,7 +447,13 @@ export default function ClientKanban({ clientId }) {
             </button>
             <button
               onClick={async () => {
-                if (!selectedTask?.id || !confirm('Delete task?')) return;
+                if (!selectedTask?.id) return;
+                const confirmed = await confirmAction('Delete task?', {
+                  title: 'Delete Task',
+                  confirmLabel: 'Delete',
+                  tone: 'danger'
+                });
+                if (!confirmed) return;
                 await remove(ref(database, `${BOARD_PATH}/${selectedTask.id}`));
                 setSelectedTask(null);
               }}

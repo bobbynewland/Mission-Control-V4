@@ -14,6 +14,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { database, ref, push, update, remove, onValue } from '../lib/firebase';
+import { confirmAction } from '../lib/dialogs';
 
 const PROJECTS_PATH = 'workspaces/winslow_main/projects';
 const EMPTY_FORM = {
@@ -346,7 +347,10 @@ const Projects = () => {
   const archiveProject = async (project) => {
     const normalized = normalizeProject(project);
     if (normalized.archived) return;
-    const confirmed = window.confirm(`Archive "${normalized.name}"? It will disappear from the main project list until restored.`);
+    const confirmed = await confirmAction(`Archive "${normalized.name}"? It will disappear from the main project list until restored.`, {
+      title: 'Archive Project',
+      confirmLabel: 'Archive'
+    });
     if (!confirmed) return;
 
     const patch = {
@@ -392,9 +396,17 @@ const Projects = () => {
     const normalized = normalizeProject(project);
     if (!normalized.archived) return;
 
-    const first = window.confirm(`Permanently delete "${normalized.name}"? This cannot be undone.`);
+    const first = await confirmAction(`Permanently delete "${normalized.name}"? This cannot be undone.`, {
+      title: 'Delete Forever',
+      confirmLabel: 'Continue',
+      tone: 'danger'
+    });
     if (!first) return;
-    const second = window.confirm('Last check: nuke this archived project forever?');
+    const second = await confirmAction('Last check: permanently delete this archived project forever?', {
+      title: 'Final Confirmation',
+      confirmLabel: 'Delete Forever',
+      tone: 'danger'
+    });
     if (!second) return;
 
     await remove(ref(database, `${PROJECTS_PATH}/${normalized.id}`));
@@ -414,7 +426,7 @@ const Projects = () => {
   const canArchiveCurrentProject = currentProject && !currentProject.archived && formData.status === 'completed';
 
   return (
-    <div className="p-4 pb-24 space-y-4">
+    <div className="h-full min-h-0 overflow-y-auto p-4 pb-24 space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-black uppercase tracking-tight">

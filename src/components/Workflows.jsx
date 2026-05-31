@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import ScriptIdeaWorkflows, { isScriptWorkflow } from './ScriptIdeaWorkflows';
 import NicheGallery, { NICHE_THUMBNAILS, ALL_NICHES } from './NicheGallery';
+import { confirmAction, notify } from '../lib/dialogs';
 
 // ─── Firebase Helpers ────────────────────────────────────────────────────────
 const FIREBASE_BASE = 'https://winslow-756c3-default-rtdb.firebaseio.com/workspaces/winslow_main';
@@ -122,7 +123,12 @@ const Workflows = () => {
   };
 
   const deleteWorkflow = async (id) => {
-    if (!confirm('Delete this workflow?')) return;
+    const confirmed = await confirmAction('Delete this workflow?', {
+      title: 'Delete Workflow',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
     setQueue(q => q.filter(item => item.id !== id));
     await api.delete(`/approvalQueue/${id}`);
   };
@@ -182,7 +188,7 @@ const Workflows = () => {
   const lockNiches = async (item) => {
     const picks = item?.niches?.selected || [];
     if (picks.length !== 2) {
-      alert('Pick exactly 2 niches to continue');
+      await notify('Pick exactly 2 niches to continue.', { title: 'Niches Required' });
       return;
     }
     await updateWorkflow(item.id, { status: 'running', updatedAt: new Date().toISOString() });
@@ -219,14 +225,14 @@ const Workflows = () => {
   const testDiscordPost = async () => {
     try {
       const r = await fetch('https://' + window.location.host + '/api/run-discord-post', { method: 'POST' });
-      if (r.ok) alert('Test post sent!');
+      if (r.ok) await notify('Test post sent!', { title: 'Discord Test' });
     } catch {
       // Fallback: trigger via cron run
       await fetch(`https://winslow-756c3-default-rtdb.firebaseio.com/workspaces/winslow_main/agent_tasks.json`, {
         method: 'POST', headers,
         body: JSON.stringify({ type: 'discord.test', status: 'queued', createdAt: Date.now() })
       });
-      alert('Test post triggered via cron agent');
+      await notify('Test post triggered via cron agent.', { title: 'Discord Test' });
     }
   };
 

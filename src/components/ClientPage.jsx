@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import ClientKanban from './ClientKanban';
 import ClientNotes from './ClientNotes';
+import { notify } from '../lib/dialogs';
 
 const TABS = [
   { id: 'kanban', label: 'Kanban', icon: LayoutGrid },
@@ -147,11 +148,11 @@ const DriveTab = ({ client, onOpenFolder }) => {
         }));
         onOpenFolder();
       } else {
-        alert('Failed to create Drive folder: ' + (data.message || 'Unknown error'));
+        await notify('Failed to create Drive folder: ' + (data.message || 'Unknown error'), { title: 'Drive Error' });
       }
     } catch (err) {
       console.error('Failed to create folder:', err);
-      alert('Failed to create Drive folder. Please try again.');
+      await notify('Failed to create Drive folder. Please try again.', { title: 'Drive Error' });
     } finally {
       setIsCreating(false);
     }

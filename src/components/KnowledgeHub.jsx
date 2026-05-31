@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
+import { confirmAction } from '../lib/dialogs';
 
 // ============================================================================
 // CONSTANTS
@@ -172,10 +173,14 @@ const KnowledgeHub = () => {
   // Delete note
   const deleteNote = async (id, e) => {
     e?.stopPropagation();
-    if (window.confirm('Delete this note?')) {
-      if (selectedNoteId === id) setSelectedNoteId(null);
-      await db.notes.removeNote(id);
-    }
+    const confirmed = await confirmAction('Delete this note?', {
+      title: 'Delete Note',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
+    if (selectedNoteId === id) setSelectedNoteId(null);
+    await db.notes.removeNote(id);
   };
 
   // Toggle star
@@ -271,7 +276,7 @@ const KnowledgeHub = () => {
 
   // =============== LIST VIEW ===============
   const ListView = () => (
-    <div className="flex flex-col" style={{ minHeight: '100dvh' }}>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       {/* Header */}
       <div className="bg-zinc-950 border-b border-zinc-800/50 safe-area-pt">
         <div className="flex items-center justify-between px-5 pt-4 pb-3">
@@ -407,7 +412,7 @@ const KnowledgeHub = () => {
 
   // =============== NOTE EDITOR VIEW ===============
   const NoteEditorView = () => (
-    <div className="flex flex-col" style={{ minHeight: '100dvh' }}>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       {/* Editor Header */}
       <div className="bg-zinc-950 border-b border-zinc-800/50 safe-area-pt">
         <div className="flex items-center justify-between px-4 py-3">
@@ -504,6 +509,7 @@ const KnowledgeHub = () => {
             onChange={(e) => setLocalContent(e.target.value)}
             className="w-full bg-transparent text-zinc-300 leading-relaxed focus:outline-none placeholder:text-zinc-600 text-base resize-none"
             placeholder="Start typing..."
+            rows={12}
           />
         </div>
       </div>
@@ -521,7 +527,7 @@ const KnowledgeHub = () => {
     };
 
     return (
-      <div className="flex flex-col" style={{ minHeight: '100dvh' }}>
+      <div className="flex h-full min-h-0 flex-col overflow-hidden">
         <div className="bg-zinc-950 border-b border-zinc-800/50 safe-area-pt">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
@@ -755,18 +761,18 @@ const KnowledgeHub = () => {
   };
 
   return (
-    <div className="h-full">
+    <div className="h-full min-h-0 overflow-hidden">
       <AnimatePresence mode="wait">
         {selectedKbId ? (
-          <motion.div key="kb-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div className="h-full min-h-0" key="kb-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <KbItemView />
           </motion.div>
         ) : selectedNoteId ? (
-          <motion.div key="note-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div className="h-full min-h-0" key="note-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <NoteEditorView />
           </motion.div>
         ) : (
-          <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div className="h-full min-h-0" key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <ListView />
           </motion.div>
         )}

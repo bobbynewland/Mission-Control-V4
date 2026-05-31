@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, addWeeks, subWeeks, startOfWeek, endOfWeek, addDays, subDays, getHours, getMinutes, setHours, setMinutes } from 'date-fns';
 import {
   Plus,
@@ -12,6 +12,7 @@ import {
   List
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { confirmAction, notify } from '../lib/dialogs';
 
 // Mobile-optimized Calendar Component
 const Calendar = () => {
@@ -38,203 +39,6 @@ const Calendar = () => {
   
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
-  const isRefreshing = useRef(false); // Prevent concurrent refresh
-
-  // Firebase token sync - REST is sufficient for unauthenticated reads/writes
-  // sessionStorage is used as insurance against localStorage clearing by ITP/mobile OS
-  const FIREBASE_CAL_AUTH_URL = 'https://winslow-756c3-default-rtdb.firebaseio.com/workspaces/winslow_main/auth/calendar.json';
-
-  // Sync tokens from Firebase (REST) + sessionStorage backup
-  const syncFromFirebase = useCallback(async () => {
-    // Try sessionStorage first (immune to localStorage clearing)
-    const ssRefresh = sessionStorage.getItem('mc3_calendar_refresh_backup');
-    
-    try {
-      const resp = await fetch(FIREBASE_CAL_AUTH_URL, { method: 'GET' });
-      const data = await resp.json();
-      if (data && data.accessToken && data.refreshToken) {
-        localStorage.setItem('mc3_calendar_token', data.accessToken);
-        localStorage.setItem('mc3_calendar_refresh', data.refreshToken);
-        localStorage.setItem('mc3_calendar_expiry', String(data.expiry || ''));
-        try { sessionStorage.setItem('mc3_calendar_refresh_backup', data.refreshToken); } catch (e) {}
-        console.log('📱 Tokens restored from Firebase');
-        return { accessToken: data.accessToken, refreshToken: data.refreshToken, expiry: data.expiry };
-      }
-    } catch (err) {
-      console.warn('Firebase REST sync error:', err.message);
-    }
-    
-    // If we have a sessionStorage backup refresh token, return it for silent re-auth
-    if (ssRefresh) {
-      console.log('📱 Refresh token recovered from sessionStorage backup');
-      return { accessToken: null, refreshToken: ssRefresh, expiry: null };
-    }
-    
-    return null;
-  }, []);
-
-  // Save tokens to Firebase (REST) + sessionStorage backup
-  const saveToFirebase = useCallback(async (accessToken, refreshToken, expiry) => {
-    const payload = { accessToken, refreshToken, expiry, updatedAt: Date.now() };
-    // Always persist refresh token to sessionStorage as last-resort backup
-    try { sessionStorage.setItem('mc3_calendar_refresh_backup', refreshToken); } catch (e) {}
-    try {
-      await fetch(FIREBASE_CAL_AUTH_URL, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      console.log('📱 Tokens saved to Firebase + sessionStorage backup');
-    } catch (err) {
-      console.error('Firebase save error:', err.message);
-      // Firebase write failed but sessionStorage backup succeeded — not fatal
-    }
-  }, []);
-
-  // Clear tokens locally (marks needsAuth) but NEVER delete refresh token —
-  // it may still be valid and can be used to re-authenticate silently.
-  // Only delete refresh token when server explicitly returns invalid_grant.
-  const clearAccessToken = useCallback(async () => {
-    localStorage.removeItem('mc3_calendar_token');
-    localStorage.removeItem('mc3_calendar_expiry');
-    setNeedsAuth(true);
-    // Refresh token is kept — it's still valid until explicitly revoked
-    console.log('🔓 Access token cleared, refresh token preserved for silent re-auth');
-  }, []);
-
-  // Full token wipe — only call when user explicitly signs out or OAuth is revoked
-  const clearAllTokens = useCallback(async () => {
-    localStorage.removeItem('mc3_calendar_token');
-    localStorage.removeItem('mc3_calendar_expiry');
-    localStorage.removeItem('mc3_calendar_refresh');
-    sessionStorage.removeItem('mc3_calendar_refresh_backup');
-    setNeedsAuth(true);
-    try {
-      await fetch(FIREBASE_CAL_AUTH_URL, { method: 'DELETE' });
-    } catch (err) { /* best effort */ }
-  }, []);
-
-  // Get valid token (refresh if expired) - with Firebase sync
-  const getValidToken = useCallback(async () => {
-    // Prevent concurrent refresh attempts
-    if (isRefreshing.current) {
-      console.log('⏳ Token refresh in progress, waiting...');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Return what's in localStorage after refresh settles
-      return localStorage.getItem('mc3_calendar_token');
-    }
-    
-    let token = localStorage.getItem('mc3_calendar_token');
-    let expiry = localStorage.getItem('mc3_calendar_expiry');
-    let refreshToken = localStorage.getItem('mc3_calendar_refresh');
-
-    // If no token in localStorage, try Firebase (authenticated + REST fallback)
-    if (!token && !expiry) {
-      console.log('🔍 No local token, checking Firebase...');
-      const fbData = await syncFromFirebase();
-      if (fbData) {
-        token = fbData.accessToken;
-        refreshToken = fbData.refreshToken;
-        expiry = fbData.expiry;
-      } else {
-        // Last resort: check sessionStorage for refresh token only
-        const backupRefresh = sessionStorage.getItem('mc3_calendar_refresh_backup');
-        if (backupRefresh) {
-          console.log('🔄 Restored refresh token from sessionStorage backup, attempting silent re-auth...');
-          refreshToken = backupRefresh;
-          // Trigger re-auth without wiping
-          localStorage.setItem('mc3_calendar_refresh', refreshToken);
-        }
-      }
-    }
-
-    if (!token && !refreshToken) {
-      setNeedsAuth(true);
-      return null;
-    }
-
-    // Check if token is expired (with 5 min buffer for safety)
-    const isExpired = !expiry || Date.now() > parseInt(expiry) - (5 * 60 * 1000);
-
-    if (!isExpired) {
-      return token; // Token still valid
-    }
-
-    // Token expired — try to refresh
-    if (!refreshToken) {
-      console.log('❌ No refresh token available, attempting Firebase restore...');
-      await syncFromFirebase();
-      const rt = localStorage.getItem('mc3_calendar_refresh');
-      if (!rt) {
-        setNeedsAuth(true);
-        return null;
-      }
-      refreshToken = rt;
-    }
-
-    // Mark refresh in progress
-    isRefreshing.current = true;
-
-    try {
-      console.log('🔄 Attempting token refresh...');
-      const response = await fetch('/api/auth/google?action=refresh', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: refreshToken })
-      });
-
-      if (!response.ok) {
-        // Try to parse error for invalid_grant (refresh token truly dead)
-        let errorData;
-        try { errorData = JSON.parse(await response.text()); } catch (e) { errorData = {}; }
-        const isInvalidGrant = response.status === 401 || errorData?.error === 'invalid_grant' || errorData?.error === 'invalid_client';
-        
-        if (isInvalidGrant) {
-          // Refresh token is genuinely revoked — full sign-out required
-          console.error('❌ Refresh token revoked, clearing all tokens:', errorData?.message);
-          await clearAllTokens();
-        } else {
-          // Transient error (network, server 500, etc.) — keep refresh token, just clear access
-          console.error('❌ Token refresh failed (transient):', response.status, errorData?.message || '');
-          await clearAccessToken();
-        }
-        isRefreshing.current = false;
-        return null;
-      }
-
-      const data = await response.json();
-
-      if (!data.access_token) {
-        console.error('❌ No access_token in refresh response');
-        await clearAccessToken();
-        isRefreshing.current = false;
-        return null;
-      }
-
-      // Store new tokens in localStorage
-      const newExpiry = data.expiry || (Date.now() + (data.expires_in * 1000));
-      localStorage.setItem('mc3_calendar_token', data.access_token);
-      localStorage.setItem('mc3_calendar_expiry', newExpiry.toString());
-      
-      // Preserve refresh token (Google may not return new one)
-      const newRefreshToken = data.refresh_token || refreshToken;
-      localStorage.setItem('mc3_calendar_refresh', newRefreshToken);
-      
-      // Save to Firebase for cross-device persistence
-      await saveToFirebase(data.access_token, newRefreshToken, newExpiry);
-      
-      setNeedsAuth(false);
-      isRefreshing.current = false;
-      console.log('✅ Token refreshed successfully');
-      return data.access_token;
-    } catch (err) {
-      console.error('❌ Token refresh error (network/exception):', err.message);
-      // Network error — don't wipe refresh token, just clear access token
-      await clearAccessToken();
-      isRefreshing.current = false;
-      return null;
-    }
-  }, [syncFromFirebase, saveToFirebase, clearAccessToken, clearAllTokens]);
 
   // Load events
   useEffect(() => {
@@ -257,7 +61,7 @@ const Calendar = () => {
     // Proactive background refresh every 30 minutes
     const refreshInterval = setInterval(() => {
       console.log('🕒 Proactive token heartbeat...');
-      getValidToken();
+      loadEvents();
     }, 30 * 60 * 1000);
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -292,39 +96,35 @@ const Calendar = () => {
 
   const loadEvents = async () => {
     try {
-      const token = await getValidToken();
-      if (!token) {
-        setLoading(false);
+      const response = await fetch('/api/calendar/events?all=true&maxResults=100', { cache: 'no-store' });
+
+      if (response.status === 401) {
+        setNeedsAuth(true);
         return;
       }
-
-      const now = new Date();
-      const timeMin = now.toISOString();
-      const timeMax = new Date(now.getTime() + (60 * 24 * 60 * 60 * 1000)).toISOString();
-
-      const response = await fetch(
-        `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
 
       if (!response.ok) throw new Error('Failed to fetch');
 
       const data = await response.json();
+      if (!data.connected) {
+        setNeedsAuth(true);
+        setEvents([]);
+        return;
+      }
       
-      const formattedEvents = (data.items || []).map(item => ({
+      const formattedEvents = (data.events || []).map(item => ({
         id: item.id,
-        title: item.summary || 'Untitled',
-        start: new Date(item.start?.dateTime || item.start?.date),
-        end: new Date(item.end?.dateTime || item.end?.date),
+        title: item.summary || item.title || 'Untitled',
+        start: new Date(item.start),
+        end: new Date(item.end),
         location: item.location,
         description: item.description,
         hangoutLink: item.hangoutLink,
-        allDay: !item.start?.dateTime
+        allDay: item.start && !String(item.start).includes('T')
       }));
 
       setEvents(formattedEvents);
+      setNeedsAuth(false);
     } catch (err) {
       console.error('Error:', err);
     } finally {
@@ -394,12 +194,6 @@ const Calendar = () => {
   // Create or Update event
   const saveEvent = async () => {
     try {
-      const token = await getValidToken();
-      if (!token) {
-        alert('Please connect your Google Calendar first');
-        return;
-      }
-
       const event = {
         summary: newEvent.title,
         start: {
@@ -414,20 +208,22 @@ const Calendar = () => {
         description: newEvent.description
       };
 
-      const url = editingEvent 
-        ? `https://www.googleapis.com/calendar/v3/calendars/primary/events/${editingEvent.id}`
-        : 'https://www.googleapis.com/calendar/v3/calendars/primary/events';
-      
+      const url = editingEvent
+        ? `/api/calendar/event?id=${encodeURIComponent(editingEvent.id)}`
+        : '/api/calendar/event';
       const method = editingEvent ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method: method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(event)
       });
+
+      if (response.status === 401) {
+        setNeedsAuth(true);
+        await notify('Please connect your Google Calendar first.', { title: 'Calendar Not Connected' });
+        return;
+      }
 
       if (!response.ok) throw new Error('Failed to save');
 
@@ -436,23 +232,26 @@ const Calendar = () => {
       setShowBottomSheet(false);
       loadEvents();
     } catch (err) {
-      alert(`Failed to ${editingEvent ? 'update' : 'create'} event`);
+      await notify(`Failed to ${editingEvent ? 'update' : 'create'} event.`, { title: 'Calendar Error' });
     }
   };
 
   const deleteEvent = async (eventId) => {
-    if (!confirm('Delete this event?')) return;
+    const confirmed = await confirmAction('Delete this event?', {
+      title: 'Delete Event',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
     try {
-      const token = await getValidToken();
-      if (!token) return;
+      const response = await fetch(`/api/calendar/event?id=${encodeURIComponent(eventId)}`, {
+        method: 'DELETE'
+      });
 
-      const response = await fetch(
-        `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
-        {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
+      if (response.status === 401) {
+        setNeedsAuth(true);
+        return;
+      }
 
       if (!response.ok) throw new Error('Failed');
       
@@ -461,7 +260,7 @@ const Calendar = () => {
       setShowBottomSheet(false);
       loadEvents();
     } catch (err) {
-      alert('Failed to delete event');
+      await notify('Failed to delete event.', { title: 'Calendar Error' });
     }
   };
 
@@ -509,7 +308,7 @@ const Calendar = () => {
   }
 
   // Show connect button if auth needed
-  if (needsAuth || !localStorage.getItem('mc3_calendar_token')) {
+  if (needsAuth) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-6 text-center">
         <CalendarIcon size={48} className="text-gold/50 mb-4" />

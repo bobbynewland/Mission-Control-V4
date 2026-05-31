@@ -10,6 +10,7 @@ import {
   CheckCircle2, Circle, AlertCircle
 } from 'lucide-react';
 import { db, ref, onValue, update, push, set, remove } from '../lib/firebase';
+import { confirmAction, notify } from '../lib/dialogs';
 
 // ============================================================================
 // CONSTANTS
@@ -133,17 +134,20 @@ const ContentFactory = () => {
   const runCouncilNow = async () => {
     setRunningCouncil(true);
     try {
-      const { exec } = require('child_process');
-      exec('node /root/.openclaw/workspace/mission-control-v3/scripts/council-cron.js run', (error, stdout, stderr) => {
-        if (error) {
-          console.error('Council run error:', error);
-        }
-        console.log('Council output:', stdout);
-        setCouncilLastRun(new Date().toISOString());
-        setRunningCouncil(false);
+      const response = await fetch('/api/content-council', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'run' })
       });
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        throw new Error(result.detail || result.error || 'Council run failed');
+      }
+      setCouncilLastRun(new Date().toISOString());
     } catch (err) {
       console.error('Council run failed:', err);
+      await notify(`Council run failed: ${err.message}`, { title: 'Council Error' });
+    } finally {
       setRunningCouncil(false);
     }
   };
@@ -169,19 +173,37 @@ const ContentFactory = () => {
 
   // Delete item
   const deleteItem = useCallback(async (itemId) => {
-    if (!confirm('Delete this content?')) return;
+    const confirmed = await confirmAction('Delete this content?', {
+      title: 'Delete Content',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
     await db.content.remove(itemId);
   }, []);
 
   // Archive item
   const archiveItem = useCallback(async (itemId) => {
-    if (!confirm('Archive this content?')) return;
+    const confirmed = await confirmAction('Archive this content?', {
+      title: 'Archive Content',
+      confirmLabel: 'Archive'
+    });
+    if (!confirmed) return;
     await db.content.update(itemId, {
       column: 'archived',
       archivedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
   }, []);
+
+  const moveItemToStage = useCallback(async (itemId, targetStage) => {
+    const item = contentItems.find(contentItem => contentItem.id === itemId);
+    if (!item || item.column === targetStage) return;
+    await db.content.update(itemId, {
+      column: targetStage,
+      updatedAt: new Date().toISOString()
+    });
+  }, [contentItems]);
 
   // Drag handlers with 25px touch threshold
   const handleDragStart = (e, item) => {
@@ -336,7 +358,15 @@ const ContentFactory = () => {
                     onExpand={(id) => setExpandedId(expandedId === id ? null : id)}
                     expandedId={expandedId}
                     draggedItem={draggedItem}
-                    isDragging={isDragging}
+                    onMoveItem={moveItemToStage}
+                    onDragStartItem={(item) => {
+                      setDraggedItem(item);
+                      setIsDragging(true);
+                    }}
+                    onDragEndItem={() => {
+                      setDraggedItem(null);
+                      setIsDragging(false);
+                    }}
                   />
                 ))}
               </div>
@@ -411,7 +441,19 @@ const ContentFactory = () => {
 // PIPELINE COLUMN
 // ============================================================================
 
-const PipelineColumn = ({ stage, items, onEdit, onDelete, onArchive, onExpand, expandedId, draggedItem, isDragging }) => {
+const PipelineColumn = ({
+  stage,
+  items,
+  onEdit,
+  onDelete,
+  onArchive,
+  onExpand,
+  expandedId,
+  draggedItem,
+  onMoveItem,
+  onDragStartItem,
+  onDragEndItem
+}) => {
   const [dragOver, setDragOver] = useState(false);
 
   const handleDragOver = (e) => {
@@ -428,13 +470,7 @@ const PipelineColumn = ({ stage, items, onEdit, onDelete, onArchive, onExpand, e
     setDragOver(false);
     const itemId = e.dataTransfer.getData('text/plain') || (draggedItem && draggedItem.id);
     if (!itemId) return;
-    const item = items.find(i => i.id === itemId);
-    if (item && item.column !== stage.id) {
-      await db.content.update(itemId, {
-        column: stage.id,
-        updatedAt: new Date().toISOString()
-      });
-    }
+    await onMoveItem(itemId, stage.id);
   };
 
   return (
@@ -473,10 +509,9 @@ const PipelineColumn = ({ stage, items, onEdit, onDelete, onArchive, onExpand, e
               onDragStart={(e) => {
                 e.dataTransfer.setData('text/plain', item.id);
                 e.dataTransfer.effectAllowed = 'move';
-                setDraggedItem(item);
-                setIsDragging(true);
+                onDragStartItem(item);
               }}
-              onDragEnd={() => { setIsDragging(false); setDraggedItem(null); }}
+              onDragEnd={onDragEndItem}
             />
           ))
         )}

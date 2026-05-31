@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   File, 
   Folder, 
   Search, 
@@ -28,6 +28,7 @@ import {
   Copy,
   Users
 } from 'lucide-react';
+import { confirmAction } from '../lib/dialogs';
 
 const ROOT_FOLDER_ID = '1hU2LW9fW0aht7x_-ki80a4f5MFifIeK7'; // AI Skills Studio Root
 
@@ -131,13 +132,17 @@ const GoogleDrive = () => {
     }, 800);
   };
 
-  const deleteSelected = () => {
+  const deleteSelected = async () => {
     if (!selectedIds.length) return;
-    if (confirm(`Delete ${selectedIds.length} item${selectedIds.length > 1 ? 's' : ''}? This cannot be undone.`)) {
-      setFiles(prev => prev.filter(f => !selectedIds.includes(f.id)));
-      setSelectedIds([]);
-      setIsSelectMode(false);
-    }
+    const confirmed = await confirmAction(`Delete ${selectedIds.length} item${selectedIds.length > 1 ? 's' : ''}? This cannot be undone.`, {
+      title: 'Delete Drive Items',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
+    setFiles(prev => prev.filter(f => !selectedIds.includes(f.id)));
+    setSelectedIds([]);
+    setIsSelectMode(false);
   };
 
   const openMoveModal = () => {

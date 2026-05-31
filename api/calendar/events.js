@@ -1,5 +1,6 @@
 // Calendar API endpoint for Mission Control
 // Fetches Google Calendar events
+import { clearServerCalendarTokens, getServerCalendarAccessToken } from '../lib/google-calendar-auth.js';
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -20,12 +21,16 @@ export default async function handler(req, res) {
     const days = parseInt(req.query.days) || 7;
     const maxResults = parseInt(req.query.maxResults) || 20;
     
-    // Check for authorization header
+    // Prefer server-side token storage, with bearer support kept for older clients.
     const authHeader = req.headers.authorization;
     let accessToken = null;
     
     if (authHeader?.startsWith('Bearer ')) {
       accessToken = authHeader.slice(7);
+    }
+
+    if (!accessToken) {
+      accessToken = await getServerCalendarAccessToken();
     }
     
     // If no token provided, return not connected
@@ -60,6 +65,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       if (response.status === 401) {
+        try { await clearServerCalendarTokens(); } catch (e) {}
         return res.status(401).json({
           events: [],
           connected: false,

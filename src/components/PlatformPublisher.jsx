@@ -20,6 +20,7 @@ import {
   Loader2,
   Globe
 } from 'lucide-react';
+import { notify } from '../lib/dialogs';
 
 const PLATFORM_STATUS_PATH = 'workspaces/winslow_main/platformConnections';
 const TASKS_PATH = 'workspaces/winslow_main/tasks';
@@ -142,7 +143,9 @@ const PlatformPublisher = () => {
     try {
       // In a real implementation, this would call an API endpoint
       // that runs the platform-poster.js script
-      alert('Manual publish triggered! This would run platform-poster.js in a production setup.');
+      await notify('Manual publish triggered. This would run platform-poster.js in a production setup.', {
+        title: 'Publish Triggered'
+      });
     } catch (error) {
       console.error('Publish error:', error);
     } finally {

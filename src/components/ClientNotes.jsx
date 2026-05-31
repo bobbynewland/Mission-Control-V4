@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
+import { confirmAction } from '../lib/dialogs';
 
 const TABS = [
   { id: 'all', label: 'All' },
@@ -120,10 +121,14 @@ export default function ClientNotes({ clientId }) {
   // Delete note
   const deleteNote = async (id, e) => {
     e?.stopPropagation();
-    if (window.confirm('Delete this note?')) {
-      if (selectedNoteId === id) setSelectedNoteId(null);
-      await db.notes.removeNote(id);
-    }
+    const confirmed = await confirmAction('Delete this note?', {
+      title: 'Delete Note',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
+    if (selectedNoteId === id) setSelectedNoteId(null);
+    await db.notes.removeNote(id);
   };
 
   // Toggle star

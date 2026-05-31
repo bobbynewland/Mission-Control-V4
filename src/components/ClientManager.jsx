@@ -18,6 +18,7 @@ import {
   Cloud
 } from 'lucide-react';
 import { db } from '../lib/firebase';
+import { confirmAction } from '../lib/dialogs';
 
 const ClientManager = () => {
   const [clients, setClients] = useState([]);
@@ -111,8 +112,13 @@ const ClientManager = () => {
     setEditingClient(null);
   };
 
-  const deleteClient = (id) => {
-    if (!confirm('Delete this client and all their files?')) return;
+  const deleteClient = async (id) => {
+    const confirmed = await confirmAction('Delete this client and all their files?', {
+      title: 'Delete Client',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
     setClients(clients.filter(c => c.id !== id));
     if (selectedClient?.id === id) setSelectedClient(null);
   };
@@ -132,8 +138,13 @@ const ClientManager = () => {
     setShowAddFile(false);
   };
 
-  const deleteFile = (clientId, fileId) => {
-    if (!confirm('Delete this file?')) return;
+  const deleteFile = async (clientId, fileId) => {
+    const confirmed = await confirmAction('Delete this file?', {
+      title: 'Delete File',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
     setClients(clients.map(c => 
       c.id === clientId 
         ? { ...c, files: c.files.filter(f => f.id !== fileId) }

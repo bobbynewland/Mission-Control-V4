@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -28,28 +28,22 @@ import {
   Clapperboard,
   FileText as FileTextIcon
 } from 'lucide-react';
-import Kanban from './components/Kanban';
-import Projects from './components/Projects';
-import GoogleDrive from './components/GoogleDrive';
-import QuickCapture from './components/QuickCapture';
-import Today from './components/Today';
-import Agents from './components/Agents';
-import Notes from './components/Notes';
-import CalendarView from './components/Calendar';
-import ContentFactory from './components/ContentFactory';
-import ClientManager from './components/ClientManager';
-import ClientList from './components/ClientList';
-import ClientPage from './components/ClientPage';
-import Log from './components/Log';
-import KnowledgeHub from './components/KnowledgeHub';
-import Workflows from './components/Workflows';
-import UnifiedSearch from './components/UnifiedSearch';
 import Auth from './components/Auth';
-import ContentCalendar from './components/ContentCalendar';
-import PublishingCalendar from './components/PublishingCalendar';
-import PlatformPublisher from './components/PlatformPublisher';
 import { initGA, trackPageView, trackEvent } from './lib/analytics';
 import TagManager from 'react-gtm-module';
+
+const Kanban = lazy(() => import('./components/Kanban'));
+const Projects = lazy(() => import('./components/Projects'));
+const GoogleDrive = lazy(() => import('./components/GoogleDrive'));
+const QuickCapture = lazy(() => import('./components/QuickCapture'));
+const Today = lazy(() => import('./components/Today'));
+const Agents = lazy(() => import('./components/Agents'));
+const CalendarView = lazy(() => import('./components/Calendar'));
+const ContentFactory = lazy(() => import('./components/ContentFactory'));
+const ClientList = lazy(() => import('./components/ClientList'));
+const ClientPage = lazy(() => import('./components/ClientPage'));
+const KnowledgeHub = lazy(() => import('./components/KnowledgeHub'));
+const UnifiedSearch = lazy(() => import('./components/UnifiedSearch'));
 
 // Simplified menu - 7 main sections
 const menuItems = [
@@ -61,6 +55,12 @@ const menuItems = [
   { id: 'calendar', label: 'Calendar', icon: Calendar },
   { id: 'knowledge', label: 'Knowledge', icon: Brain },
 ];
+
+const LoadingPane = () => (
+  <div className="flex h-full items-center justify-center">
+    <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+  </div>
+);
 
 const App = () => {
   const [activeTab, setActiveTab] = useState(() => {
@@ -77,6 +77,7 @@ const App = () => {
   const [clientPageClient, setClientPageClient] = useState(null);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [dialog, setDialog] = useState(null);
   const mainRef = useRef(null);
   const touchStartY = useRef(0);
   const isPulling = useRef(false);
@@ -91,6 +92,17 @@ const App = () => {
     window.addEventListener('mc3_navigate_client', handleNavigateClient);
     return () => window.removeEventListener('mc3_navigate_client', handleNavigateClient);
   }, []);
+
+  useEffect(() => {
+    const handleDialog = (event) => setDialog(event.detail);
+    window.addEventListener('mc3_dialog', handleDialog);
+    return () => window.removeEventListener('mc3_dialog', handleDialog);
+  }, []);
+
+  const closeDialog = (value) => {
+    dialog?.resolve?.(value);
+    setDialog(null);
+  };
 
   // Handle back navigation from ClientPage
   const handleClientBack = () => {
@@ -346,17 +358,19 @@ const App = () => {
 
         {/* Main Content */}
         <main className="mobile-app-main flex-1 flex min-w-0 flex-col overflow-hidden overflow-x-hidden pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:overflow-x-hidden lg:overflow-y-hidden lg:pb-0">
-          {activeTab === 'today' && <Today onNavigate={setActiveTab} />}
-          {activeTab === 'calendar' && <CalendarView />}
-          {activeTab === 'factory' && <ContentFactory />}
-          {activeTab === 'clients' && !clientPageClient && <ClientList />}
-          {activeTab === 'clients' && clientPageClient && <ClientPage client={clientPageClient} onBack={handleClientBack} />}
-          {activeTab === 'knowledge' && <KnowledgeHub />}
-          {activeTab === 'tasks' && <Kanban />}
-          {activeTab === 'projects' && <Projects />}
-          {activeTab === 'capture' && <QuickCapture onNavigate={setActiveTab} />}
-          {activeTab === 'drive' && <GoogleDrive />}
-          {activeTab === 'agents' && <Agents />}
+          <Suspense fallback={<LoadingPane />}>
+            {activeTab === 'today' && <Today onNavigate={setActiveTab} />}
+            {activeTab === 'calendar' && <CalendarView />}
+            {activeTab === 'factory' && <ContentFactory />}
+            {activeTab === 'clients' && !clientPageClient && <ClientList />}
+            {activeTab === 'clients' && clientPageClient && <ClientPage client={clientPageClient} onBack={handleClientBack} />}
+            {activeTab === 'knowledge' && <KnowledgeHub />}
+            {activeTab === 'tasks' && <Kanban />}
+            {activeTab === 'projects' && <Projects />}
+            {activeTab === 'capture' && <QuickCapture onNavigate={setActiveTab} />}
+            {activeTab === 'drive' && <GoogleDrive />}
+            {activeTab === 'agents' && <Agents />}
+          </Suspense>
         </main>
 
         {/* Mobile Bottom Navigation (5 items) */}
@@ -456,13 +470,58 @@ const App = () => {
       {/* Global Search Modal */}
       <AnimatePresence>
         {showSearch && (
-          <UnifiedSearch 
-            onClose={() => setShowSearch(false)} 
-            onNavigate={(tab) => {
-              setActiveTab(tab);
-              setShowSearch(false);
-            }}
-          />
+          <Suspense fallback={null}>
+            <UnifiedSearch 
+              onClose={() => setShowSearch(false)} 
+              onNavigate={(tab) => {
+                setActiveTab(tab);
+                setShowSearch(false);
+              }}
+            />
+          </Suspense>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {dialog && (
+          <div className="fixed inset-0 z-[200] grid place-items-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              onClick={() => closeDialog(false)}
+            />
+            <motion.div
+              initial={{ y: 18, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 18, opacity: 0, scale: 0.98 }}
+              className="glass relative z-10 w-full max-w-sm rounded-2xl p-5 shadow-2xl"
+            >
+              <h2 className="text-lg font-black text-white">{dialog.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-white/60">{dialog.message}</p>
+              <div className="mt-5 flex gap-2">
+                {dialog.type === 'confirm' && (
+                  <button
+                    onClick={() => closeDialog(false)}
+                    className="flex-1 rounded-xl bg-white/10 px-4 py-3 text-sm font-bold text-white/70"
+                  >
+                    {dialog.cancelLabel}
+                  </button>
+                )}
+                <button
+                  onClick={() => closeDialog(true)}
+                  className={`flex-1 rounded-xl px-4 py-3 text-sm font-black ${
+                    dialog.tone === 'danger'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-gold text-black'
+                  }`}
+                >
+                  {dialog.confirmLabel}
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

@@ -18,6 +18,7 @@ import {
   Cloud
 } from 'lucide-react';
 import { db } from '../lib/firebase';
+import { confirmAction } from '../lib/dialogs';
 
 const Log = () => {
   const [entries, setEntries] = useState([]);
@@ -130,8 +131,13 @@ const Log = () => {
     setEditingEntry(null);
   };
 
-  const deleteEntry = (id) => {
-    if (!confirm('Delete this log entry?')) return;
+  const deleteEntry = async (id) => {
+    const confirmed = await confirmAction('Delete this log entry?', {
+      title: 'Delete Log Entry',
+      confirmLabel: 'Delete',
+      tone: 'danger'
+    });
+    if (!confirmed) return;
     setEntries(entries.filter(e => e.id !== id));
     if (selectedEntry?.id === id) setSelectedEntry(null);
   };
