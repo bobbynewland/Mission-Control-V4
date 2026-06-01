@@ -1,21 +1,16 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  FileText,
   Search,
   FolderOpen,
   Lightbulb,
   Clock,
-  Star,
   RefreshCw,
   Upload,
   ChevronRight,
   BookOpen,
   Zap,
-  Tag,
   ArrowLeft,
-  X,
-  Check,
-  Loader
+  AlertCircle
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,6 +24,96 @@ const FOLDER_GROUPS = [
   { id: 'projects', label: 'Projects', icon: FolderOpen, color: 'text-orange-400' },
 ];
 
+const MAX_SYNC_BATCH_BYTES = 2_750_000;
+
+function getRelativePath(file) {
+  return file.webkitRelativePath || file.name;
+}
+
+function extractTitle(filePath, content) {
+  const h1Match = content.match(/^#\s+(.+)$/m);
+  if (h1Match?.[1]) return h1Match[1].trim();
+
+  return filePath.split('/').pop()?.replace(/\.md$/i, '') || 'Untitled';
+}
+
+function extractTags(content) {
+  const tags = new Set();
+  const frontmatter = content.match(/^---\s*\n([\s\S]*?)\n---/);
+  const yaml = frontmatter?.[1] || '';
+  const inlineTags = yaml.match(/^tags:\s*(.+)$/m)?.[1];
+  const tagBlock = yaml.match(/^tags:\s*\n((?:\s*-\s*.+\n?)+)/m)?.[1];
+
+  if (inlineTags) {
+    inlineTags
+      .replace(/[\[\]'"]/g, '')
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+      .forEach((tag) => tags.add(tag.replace(/^#/, '')));
+  }
+
+  if (tagBlock) {
+    tagBlock
+      .split('\n')
+      .map((line) => line.replace(/^\s*-\s*/, '').trim())
+      .filter(Boolean)
+      .forEach((tag) => tags.add(tag.replace(/^#/, '')));
+  }
+
+  for (const match of content.matchAll(/(^|\s)#([a-zA-Z0-9_\-/]+)/g)) {
+    tags.add(match[2]);
+  }
+
+  return [...tags];
+}
+
+async function parseMarkdownFiles(fileList) {
+  const markdownFiles = [...fileList].filter((file) => /\.md$/i.test(file.name));
+  const notes = [];
+
+  for (const file of markdownFiles) {
+    const content = await file.text();
+    const filePath = getRelativePath(file);
+    const parts = filePath.split('/').filter(Boolean);
+    const folder = parts.length > 1 ? parts[0] : '';
+    const updated = new Date(file.lastModified || Date.now()).toISOString();
+
+    notes.push({
+      id: filePath.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_'),
+      title: extractTitle(filePath, content),
+      content,
+      folder,
+      filePath,
+      tags: extractTags(content),
+      created: updated,
+      updated,
+    });
+  }
+
+  return notes;
+}
+
+function batchNotes(notes) {
+  const batches = [];
+  let current = [];
+  let size = 0;
+
+  for (const note of notes) {
+    const noteSize = JSON.stringify(note).length;
+    if (current.length && size + noteSize > MAX_SYNC_BATCH_BYTES) {
+      batches.push(current);
+      current = [];
+      size = 0;
+    }
+    current.push(note);
+    size += noteSize;
+  }
+
+  if (current.length) batches.push(current);
+  return batches;
+}
+
 const ObsidianVault = () => {
   const [notes, setNotes] = useState({});
   const [filteredNotes, setFilteredNotes] = useState([]);
@@ -39,6 +124,9 @@ const ObsidianVault = () => {
   const [syncing, setSyncing] = useState(false);
   const [lastSynced, setLastSynced] = useState(null);
   const [readMode, setReadMode] = useState(true);
+  const [syncMessage, setSyncMessage] = useState('');
+  const [syncError, setSyncError] = useState('');
+  const fileInputRef = useRef(null);
 
   // Subscribe to obsidian collection in Firebase
   useEffect(() => {
@@ -83,24 +171,79 @@ const ObsidianVault = () => {
     setFilteredNotes(result);
   }, [notes, activeFolder, searchQuery]);
 
-  // Trigger sync from local Obsidian vault → Firebase
-  const handleSync = useCallback(async () => {
-    setSyncing(true);
-    try {
-      const response = await fetch('/api/obsidian-sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (response.ok) {
-        const { count, timestamp } = await response.json();
-        setLastSynced(new Date(timestamp));
-        localStorage.setItem('mc_obsidian_last_synced', timestamp);
+  const syncBatch = useCallback(async (batch, allowKeyPrompt = true) => {
+    const syncKey = localStorage.getItem('mc_obsidian_sync_key');
+    const headers = { 'Content-Type': 'application/json' };
+    if (syncKey) headers['x-api-key'] = syncKey;
+
+    const response = await fetch('/api/obsidian-sync', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ notes: batch }),
+    });
+
+    if (response.status === 401 && allowKeyPrompt) {
+      const key = window.prompt('Enter the Obsidian sync key from Vercel');
+      if (key) {
+        localStorage.setItem('mc_obsidian_sync_key', key.trim());
+        return syncBatch(batch, false);
       }
+    }
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(payload.details || payload.message || payload.error || 'Sync failed');
+    }
+
+    return payload;
+  }, []);
+
+  const uploadFiles = useCallback(async (fileList) => {
+    if (!fileList?.length) return;
+
+    setSyncing(true);
+    setSyncError('');
+    setSyncMessage('Reading markdown files...');
+
+    try {
+      const parsedNotes = await parseMarkdownFiles(fileList);
+
+      if (!parsedNotes.length) {
+        setSyncError('No markdown files were selected.');
+        return;
+      }
+
+      let syncedCount = 0;
+      let timestamp = new Date().toISOString();
+      const batches = batchNotes(parsedNotes);
+
+      for (let index = 0; index < batches.length; index += 1) {
+        setSyncMessage(`Syncing batch ${index + 1} of ${batches.length}...`);
+        const result = await syncBatch(batches[index]);
+        syncedCount += result.count || batches[index].length;
+        timestamp = result.timestamp || timestamp;
+      }
+
+      setLastSynced(new Date(timestamp));
+      setSyncMessage(`Synced ${syncedCount} notes`);
+      localStorage.setItem('mc_obsidian_last_synced', timestamp);
     } catch (err) {
       console.error('Sync failed:', err);
+      setSyncError(err.message || 'Sync failed');
+      setSyncMessage('');
+    } finally {
+      setSyncing(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
-    setSyncing(false);
+  }, [syncBatch]);
+
+  const handleSync = useCallback(() => {
+    fileInputRef.current?.click();
   }, []);
+
+  const handleFileSelection = useCallback((event) => {
+    uploadFiles(event.target.files);
+  }, [uploadFiles]);
 
   const getPreview = (content) => {
     if (!content) return '';
@@ -137,9 +280,9 @@ const ObsidianVault = () => {
   // ─── LIST VIEW ──────────────────────────────────────────────────────────────
   if (!selectedNote) {
     return (
-      <div className="flex flex-col" style={{ minHeight: '100dvh' }}>
+      <div className="flex h-full min-h-0 flex-col overflow-hidden">
         {/* Header */}
-        <div className="bg-zinc-950 border-b border-zinc-800/50 safe-area-pt">
+        <div className="shrink-0 bg-zinc-950 border-b border-zinc-800/50 safe-area-pt">
           <div className="flex items-center justify-between px-5 pt-4 pb-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
@@ -154,13 +297,27 @@ const ObsidianVault = () => {
                 )}
               </div>
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".md,text/markdown,text/plain"
+              multiple
+              webkitdirectory=""
+              directory=""
+              className="hidden"
+              onChange={handleFileSelection}
+            />
             <button
               onClick={handleSync}
               disabled={syncing}
               className="w-11 h-11 bg-emerald-500/20 hover:bg-emerald-500/30 disabled:opacity-50 rounded-2xl flex items-center justify-center transition-colors active:scale-95"
-              title="Sync Obsidian vault to Firebase"
+              title="Upload Obsidian vault files"
             >
-              <RefreshCw size={18} className={`text-emerald-400 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? (
+                <RefreshCw size={18} className="text-emerald-400 animate-spin" />
+              ) : (
+                <Upload size={18} className="text-emerald-400" />
+              )}
             </button>
           </div>
 
@@ -177,6 +334,23 @@ const ObsidianVault = () => {
               />
             </div>
           </div>
+
+          {(syncMessage || syncError) && (
+            <div className="px-5 pb-3">
+              <div className={`flex items-start gap-2 rounded-xl border px-3 py-2 text-xs ${
+                syncError
+                  ? 'border-red-500/30 bg-red-500/10 text-red-300'
+                  : 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300'
+              }`}>
+                {syncError ? (
+                  <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                ) : (
+                  <RefreshCw size={14} className={`mt-0.5 shrink-0 ${syncing ? 'animate-spin' : ''}`} />
+                )}
+                <span>{syncError || syncMessage}</span>
+              </div>
+            </div>
+          )}
 
           {/* Folder Tabs */}
           <div className="px-5 pb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
@@ -210,7 +384,7 @@ const ObsidianVault = () => {
         </div>
 
         {/* Notes List */}
-        <div className="flex-1 overflow-y-auto px-5 pb-28" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-28" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
           {loading ? (
             <div className="flex flex-col items-center justify-center py-24 text-zinc-500">
               <div className="w-8 h-8 border-2 border-zinc-800 border-t-emerald-500 rounded-full animate-spin mb-3" />
@@ -223,14 +397,14 @@ const ObsidianVault = () => {
                 {searchQuery ? 'No results found' : 'No notes yet'}
               </p>
               <p className="text-sm text-zinc-600 mt-1">
-                {searchQuery ? 'Try a different search' : 'Sync your Obsidian vault to Firebase'}
+                {searchQuery ? 'Try a different search' : 'Upload your Obsidian vault markdown files'}
               </p>
               {!searchQuery && (
                 <button
                   onClick={handleSync}
                   className="mt-4 px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-xl text-sm font-semibold"
                 >
-                  Sync Now
+                  Upload Vault
                 </button>
               )}
             </div>
@@ -279,9 +453,9 @@ const ObsidianVault = () => {
   const { id, content, title, folder, tags = [], updated, filePath } = selectedNote;
 
   return (
-    <div className="flex flex-col" style={{ minHeight: '100dvh' }}>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-zinc-950 border-b border-zinc-800/50 safe-area-pt">
+      <div className="shrink-0 bg-zinc-950 border-b border-zinc-800/50 safe-area-pt">
         <div className="flex items-center justify-between px-5 pt-4 pb-3">
           <button
             onClick={() => setSelectedNote(null)}
@@ -324,7 +498,7 @@ const ObsidianVault = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 pb-28" style={{ scrollbarWidth: 'none' }}>
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 pb-28" style={{ scrollbarWidth: 'none' }}>
         <div className="prose prose-invert prose-sm max-w-none">
           {/* Render markdown as readable text with basic formatting */}
           <div className="text-zinc-200 text-sm leading-relaxed whitespace-pre-wrap font-mono">
