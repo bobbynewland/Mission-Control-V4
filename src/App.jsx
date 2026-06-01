@@ -26,7 +26,8 @@ import {
   FolderOpen,
   Lightbulb,
   Clapperboard,
-  FileText as FileTextIcon
+  FileText as FileTextIcon,
+  BookOpen as ObsidianIcon
 } from 'lucide-react';
 import Auth from './components/Auth';
 import { initGA, trackPageView, trackEvent } from './lib/analytics';
@@ -42,6 +43,7 @@ const CalendarView = lazy(() => import('./components/Calendar'));
 const ContentFactory = lazy(() => import('./components/ContentFactory'));
 const ClientList = lazy(() => import('./components/ClientList'));
 const ClientPage = lazy(() => import('./components/ClientPage'));
+const ObsidianVault = lazy(() => import('./components/ObsidianVault'));
 const KnowledgeHub = lazy(() => import('./components/KnowledgeHub'));
 const UnifiedSearch = lazy(() => import('./components/UnifiedSearch'));
 
@@ -49,6 +51,7 @@ const UnifiedSearch = lazy(() => import('./components/UnifiedSearch'));
 const menuItems = [
   { id: 'today', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'tasks', label: 'Tasks', icon: KanbanIcon },
+  { id: 'obsidian', label: 'Obsidian', icon: ObsidianIcon },
   { id: 'projects', label: 'Projects', icon: FolderOpen },
   { id: 'factory', label: 'Content Factory', icon: Clapperboard },
   { id: 'clients', label: 'Clients', icon: Users },
@@ -361,6 +364,7 @@ const App = () => {
           <Suspense fallback={<LoadingPane />}>
             {activeTab === 'today' && <Today onNavigate={setActiveTab} />}
             {activeTab === 'calendar' && <CalendarView />}
+            {activeTab === 'obsidian' && <ObsidianVault />}
             {activeTab === 'factory' && <ContentFactory />}
             {activeTab === 'clients' && !clientPageClient && <ClientList />}
             {activeTab === 'clients' && clientPageClient && <ClientPage client={clientPageClient} onBack={handleClientBack} />}
@@ -377,11 +381,12 @@ const App = () => {
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-white/10 safe-area-pb z-30">
           <div className="flex items-center justify-around py-2 px-1">
             {[
-              {id: 'today', icon: LayoutDashboard, label: 'Home'},
-              {id: 'tasks', icon: KanbanIcon, label: 'Tasks'},
-              {id: 'factory', icon: Clapperboard, label: 'Factory'},
-              {id: 'calendar', icon: Calendar, label: 'Cal'},
-              {id: 'knowledge', icon: Brain, label: 'Brain'},
+{ id: 'today', icon: LayoutDashboard, label: 'Home'},
+              { id: 'tasks', icon: KanbanIcon, label: 'Tasks'},
+              { id: 'obsidian', icon: ObsidianIcon, label: 'Vault'},
+              { id: 'factory', icon: Clapperboard, label: 'Factory'},
+              { id: 'calendar', icon: Calendar, label: 'Cal'},
+              { id: 'knowledge', icon: Brain, label: 'Brain'},
             ].map((item) => (
               <button
                 key={item.id}

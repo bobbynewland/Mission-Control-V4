@@ -82,6 +82,16 @@ export const db = {
     updateNote: (id, data) => update(ref(database, `workspaces/winslow_main/notes/${id}`), data),
     removeNote: (id) => remove(ref(database, `workspaces/winslow_main/notes/${id}`))
   },
+  obsidian: {
+    ref: () => ref(database, 'workspaces/winslow_main/obsidian'),
+    get: () => get(ref(database, 'workspaces/winslow_main/obsidian')),
+    subscribeList: (callback) => onValue(ref(database, 'workspaces/winslow_main/obsidian'), (snapshot) => callback(snapshot.val())),
+    list: () => get(ref(database, 'workspaces/winslow_main/obsidian')),
+    set: (data) => set(ref(database, 'workspaces/winslow_main/obsidian'), data),
+    update: (id, data) => update(ref(database, `workspaces/winslow_main/obsidian/${id}`), data),
+    remove: (id) => remove(ref(database, `workspaces/winslow_main/obsidian/${id}`)),
+    push: (data) => push(ref(database, 'workspaces/winslow_main/obsidian'), data)
+  },
   projects: {
     ref: () => ref(database, 'workspaces/winslow_main/projects'),
     get: () => get(ref(database, 'workspaces/winslow_main/projects')),
