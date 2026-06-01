@@ -10,6 +10,10 @@
  * Also accepts POSTed notes directly from external sync tools:
  * Body: { notes: [{ title, content, folder, filePath, tags, created, updated }] }
  */
+export const config = {
+  runtime: 'nodejs',
+};
+
 import fs from 'fs';
 import path from 'path';
 import { readdir } from 'fs/promises';
