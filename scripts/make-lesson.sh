@@ -1,26 +1,22 @@
 #!/bin/bash
 # =============================================================================
-# AI Skills Studio — make-lesson.sh
+# AI Skills Studio — make-lesson.sh (storyboard-aware)
 # =============================================================================
-# One-command lesson production. Takes a script + voiceover, generates
-# the HTML composition, renders to MP4, and outputs the final lesson.
+# Builds the composition from a storyboard.json if present, otherwise
+# falls back to the auto-generated template.
 #
 # Usage:
 #   ./scripts/make-lesson.sh <lesson-dir> [--cloud]
 #
-# Required files in <lesson-dir>:
-#   script.txt      - the dialog (one paragraph, plain text)
-#   voiceover.mp3   - the TTS voiceover
-#   style.json      - brand colors, title, animation settings
+# With storyboard (recommended for production):
+#   <lesson-dir>/storyboard.json    ← per-beat visual plan
+#   <lesson-dir>/voiceover.mp3
+#   <lesson-dir>/images/*.png       ← one per beat
 #
-# Optional:
-#   --cloud   Use Hyperframes.app API instead of local rendering
-#             (requires HYPERFRAMES_API_KEY env var)
-#
-# Output:
-#   <lesson-dir>/build/composition.html
-#   <lesson-dir>/build/composition.mp4
-#   <lesson-dir>/lesson-final.mp4
+# Without storyboard (auto-generated):
+#   <lesson-dir>/script.txt
+#   <lesson-dir>/voiceover.mp3
+#   <lesson-dir>/style.json
 # =============================================================================
 
 set -euo pipefail
@@ -28,7 +24,6 @@ set -euo pipefail
 LESSON_DIR="${1:-}"
 USE_CLOUD=false
 
-# Parse flags
 shift || true
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -53,10 +48,8 @@ COMPOSITION="$BUILD_DIR/composition.html"
 COMPOSITION_MP4="$BUILD_DIR/composition.mp4"
 LESSON_FINAL="$LESSON_DIR/lesson-final.mp4"
 
-# Check for Hyperframes key if cloud requested
 if $USE_CLOUD && [[ -z "${HYPERFRAMES_API_KEY:-}" ]]; then
   echo "Error: --cloud requires HYPERFRAMES_API_KEY env var"
-  echo "Get one at https://hyperframes.app/ → Settings → API"
   exit 1
 fi
 
@@ -65,14 +58,21 @@ echo "AI Skills Studio — make-lesson"
 echo "============================================================"
 echo "Lesson dir:  $LESSON_DIR"
 echo "Renderer:    $($USE_CLOUD && echo "Hyperframes cloud" || echo "Local (Playwright)")"
+echo "Mode:        $([[ -f "$LESSON_DIR/storyboard.json" ]] && echo "Storyboard" || echo "Auto-generated")"
 echo "============================================================"
 
 # Step 1: Build the HTML composition
 echo ""
 echo "[1/3] Building HTML composition..."
-node "$STUDIO_DIR/scripts/build-composition.mjs" "$LESSON_DIR"
+if [[ -f "$LESSON_DIR/storyboard.json" ]]; then
+  echo "  Using storyboard.json"
+  node "$STUDIO_DIR/scripts/build-from-storyboard.mjs" "$LESSON_DIR"
+else
+  echo "  Using auto-generated template (no storyboard.json)"
+  node "$STUDIO_DIR/scripts/build-composition.mjs" "$LESSON_DIR"
+fi
 
-# Step 2: Render to MP4
+# Step 2: Render
 echo ""
 echo "[2/3] Rendering to MP4..."
 if $USE_CLOUD; then
@@ -81,13 +81,11 @@ else
   node "$STUDIO_DIR/scripts/render-local.mjs" "$LESSON_DIR"
 fi
 
-# Step 3: Copy to lesson-final.mp4
+# Step 3: Finalize
 echo ""
 echo "[3/3] Finalizing..."
 cp "$COMPOSITION_MP4" "$LESSON_FINAL"
-echo "  ✓ $LESSON_FINAL"
 
-# Get final stats
 FINAL_SIZE=$(du -h "$LESSON_FINAL" | cut -f1)
 FINAL_DUR=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$LESSON_FINAL")
 
