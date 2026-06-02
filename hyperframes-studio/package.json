@@ -1,0 +1,13 @@
+{
+  "name": "ai-skills-studio-hyperframes",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-composition.mjs",
+    "render:local": "node scripts/render-local.mjs",
+    "render:cloud": "node scripts/render-cloud.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

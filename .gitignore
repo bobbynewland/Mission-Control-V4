@@ -2,3 +2,7 @@ node_modules/
 caption-studio/out/
 caption-studio/.remotion-cache/
 caption-studio/build/
+
+hyperframes-studio/node_modules/
+hyperframes-studio/.playwright/
+build/
