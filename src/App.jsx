@@ -27,7 +27,8 @@ import {
   Lightbulb,
   Clapperboard,
   FileText as FileTextIcon,
-  BookOpen as ObsidianIcon
+  BookOpen as ObsidianIcon,
+  DollarSign
 } from 'lucide-react';
 import Auth from './components/Auth';
 import { initGA, trackPageView, trackEvent } from './lib/analytics';
@@ -45,6 +46,7 @@ const ClientList = lazy(() => import('./components/ClientList'));
 const ClientPage = lazy(() => import('./components/ClientPage'));
 const ObsidianVault = lazy(() => import('./components/ObsidianVault'));
 const KnowledgeHub = lazy(() => import('./components/KnowledgeHub'));
+const Spend = lazy(() => import('./components/Spend'));
 const UnifiedSearch = lazy(() => import('./components/UnifiedSearch'));
 
 // Simplified menu - 7 main sections
@@ -56,6 +58,7 @@ const menuItems = [
   { id: 'factory', label: 'Content Factory', icon: Clapperboard },
   { id: 'clients', label: 'Clients', icon: Users },
   { id: 'calendar', label: 'Calendar', icon: Calendar },
+  { id: 'spend', label: 'Spend', icon: DollarSign },
   { id: 'knowledge', label: 'Knowledge', icon: Brain },
 ];
 
@@ -374,6 +377,7 @@ const App = () => {
             {activeTab === 'capture' && <QuickCapture onNavigate={setActiveTab} />}
             {activeTab === 'drive' && <GoogleDrive />}
             {activeTab === 'agents' && <Agents />}
+            {activeTab === 'spend' && <Spend />}
           </Suspense>
         </main>
 
