@@ -1,0 +1,56 @@
+{
+  "lessonNumber": 1,
+  "title": "What Is an AI Employee?",
+  "crossfade": 0.3,
+  "resolution": "1920x1080",
+  "fps": 30,
+  "voiceoverVolume": 1.0,
+  "musicVolume": 0.10,
+  "colorGrade": {
+    "saturation": 1.03,
+    "contrast": 1.02,
+    "brightness": 0.01,
+    "warmth": 0.04
+  },
+  "segments": [
+    {
+      "id": "s1-hook",
+      "file": "segments/s1-hook.mp4",
+      "duration": 10,
+      "voiceover": "You know that list of stuff you keep meaning to do? Post on Instagram. Reply to the customer who DMed you three days ago. Send the invoice you forgot about."
+    },
+    {
+      "id": "s2-big-idea",
+      "file": "segments/s2-big-idea.mp4",
+      "duration": 10,
+      "voiceover": "What if you could hire someone to do all of that? Not a person. Not a tool. An AI employee. It lives on your computer. You teach it about your business once."
+    },
+    {
+      "id": "s3-what-it-does",
+      "file": "segments/s3-what-it-does.mp4",
+      "duration": 12,
+      "voiceover": "It can write your social posts for the week. It can answer your DMs. It can send invoices and follow up when people don't pay. It can post for you at 9 AM on Tuesday even though you didn't wake up until 10."
+    },
+    {
+      "id": "s4-reassurance",
+      "file": "segments/s4-reassurance.mp4",
+      "duration": 8,
+      "voiceover": "It doesn't replace you. It does the things you don't have time to do."
+    },
+    {
+      "id": "s5-win",
+      "file": "segments/s5-win.mp4",
+      "duration": 10,
+      "voiceover": "So you can grow your business. Hit your numbers. Get back to the work that actually moves the needle."
+    }
+  ],
+  "voiceover": {
+    "file": "voiceover.mp3",
+    "voice": "English_Trustworth_Man",
+    "speed": 0.92
+  },
+  "music": {
+    "file": "music.mp3",
+    "style": "lo-fi or acoustic, no beat, 75+ seconds"
+  }
+}
