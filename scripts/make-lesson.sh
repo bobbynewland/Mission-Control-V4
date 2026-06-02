@@ -65,8 +65,14 @@ echo "============================================================"
 echo ""
 echo "[1/3] Building HTML composition..."
 if [[ -f "$LESSON_DIR/storyboard.json" ]]; then
-  echo "  Using storyboard.json"
-  node "$STUDIO_DIR/scripts/build-from-storyboard.mjs" "$LESSON_DIR"
+  # Check if storyboard specifies stop-motion
+  if grep -q '"stopMotion"' "$LESSON_DIR/storyboard.json"; then
+    echo "  Using storyboard.json [STOP-MOTION mode]"
+    node "$STUDIO_DIR/scripts/build-from-storyboard-stopmotion.mjs" "$LESSON_DIR"
+  else
+    echo "  Using storyboard.json"
+    node "$STUDIO_DIR/scripts/build-from-storyboard.mjs" "$LESSON_DIR"
+  fi
 else
   echo "  Using auto-generated template (no storyboard.json)"
   node "$STUDIO_DIR/scripts/build-composition.mjs" "$LESSON_DIR"
