@@ -1,6 +1,6 @@
 # AI Skills Studio — Lesson Video Editor
 
-A shell script + config pipeline that takes individual video segments (from Flow, Veo, Omni) and produces a final polished lesson video.
+A complete video production pipeline for educational explainer videos. Takes individual video segments (from Flow, Veo, Omni) + voiceover + optional music and produces a final polished lesson video, with optional kinetic captions.
 
 ## Quick start
 
@@ -15,15 +15,14 @@ cp templates/lesson.json ~/Videos/lessons/lesson-01/
 
 ```
 lesson-01/
-├── lesson.json          # config (copy from templates/)
+├── lesson.json              # config (copy from templates/)
 ├── segments/
-│   ├── s1-hook.mp4      # from Flow/Veo (10 sec)
-│   ├── s2-big-idea.mp4  # 10 sec
-│   ├── s3-what-it-does.mp4  # 12 sec
-│   ├── s4-reassurance.mp4   # 8 sec
-│   └── s5-win.mp4       # 10 sec
-├── voiceover.mp3        # the TTS voiceover
-└── music.mp3            # background music (optional, 75+ sec)
+│   ├── s1-hook.mp4
+│   ├── s2-big-idea.mp4
+│   └── ... (more segments)
+├── voiceover.mp3            # the TTS voiceover
+├── voiceover.txt            # the voiceover text (for caption timing)
+└── music.mp3                # background music (optional)
 ```
 
 ### 3. Run the editor
@@ -32,37 +31,86 @@ lesson-01/
 ./scripts/lesson-edit.sh ~/Videos/lessons/lesson-01
 ```
 
-### 4. Get the output
+### 4. Get the outputs
 
 ```
-lesson-01/output/lesson-final.mp4
+lesson-01/output/lesson-final.mp4           # base render, no captions
+lesson-01/output/lesson-with-captions.mp4   # with kinetic captions (Remotion)
 ```
 
-## What the script does
+## What the script does (6 steps)
 
-1. **Concatenates** all segments with crossfade transitions (0.3s default)
+1. **Concatenates** all segments with configurable crossfade (default 0.3s)
 2. **Layers the voiceover** over the video (pads with silence or trims to match)
 3. **Adds background music** at low volume (looped/trimmed to video length)
 4. **Applies a unified color grade** (warmth, saturation, contrast, brightness)
-5. **Exports** to `output/lesson-final.mp4`
+5. **Exports** the base render to `lesson-final.mp4`
+6. **(Optional) Renders kinetic captions** via Remotion and composites on top → `lesson-with-captions.mp4`
+
+## Kinetic captions (v2)
+
+The caption step uses Remotion to render word-by-word kinetic typography:
+
+- **2 words per group**, centered in the lower-middle of the frame
+- **Pop-in/out animation** per word (spring-based, smooth)
+- **Emphasis color** (gold) for content words (5+ chars, capitalized)
+- **White text** for the rest
+- **Brand watermark** in the top-left corner
+- **Transparent background** so it composites cleanly on the base video
+
+**Caption timing** is estimated from:
+- Total voiceover audio duration
+- Per-word character count
+- Punctuation pauses (sentence ends = 0.5s pause, clause ends = 0.2s)
+
+This is a heuristic — not perfect, but close. For precise word-level timing, integrate Whisper or another STT tool.
+
+### Customizing the captions
+
+Edit `caption-studio/src/CaptionVideo.jsx`:
+- `fontSize` — change 72 to your preferred size
+- `wordsPerGroup` — change 2 to 1 (single words) or 3 (phrases)
+- `COLORS.emphasis` — the gold accent color
+- Position: change `bottom: 100` to move the captions up or down
 
 ## Configurable in lesson.json
 
 ```json
 {
-  "crossfade": 0.3,              // seconds between segments
-  "resolution": "1920x1080",     // output size
-  "fps": 30,                     // output framerate
-  "voiceoverVolume": 1.0,        // 0.0 to 2.0
-  "musicVolume": 0.10,           // 0.0 to 1.0 (0.10 = subtle background)
+  "crossfade": 0.3,
+  "resolution": "1920x1080",
+  "fps": 30,
+  "voiceoverVolume": 1.0,
+  "musicVolume": 0.10,
   "colorGrade": {
-    "saturation": 1.03,          // 0.0 (gray) to 2.0 (vivid)
-    "contrast": 1.02,            // 0.5 (flat) to 2.0 (harsh)
-    "brightness": 0.01,          // -1.0 (black) to 1.0 (white)
-    "warmth": 0.04               // -1.0 (cold blue) to 1.0 (hot red)
+    "saturation": 1.03,
+    "contrast": 1.02,
+    "brightness": 0.01,
+    "warmth": 0.04
+  },
+  "captions": {
+    "enabled": true,
+    "engine": "remotion",
+    "wordsPerGroup": 2,
+    "emphasisColor": "#E8B96B",
+    "textColor": "#FFFFFF",
+    "watermark": "AI Skills Studio"
   }
 }
 ```
+
+To disable captions, set `"captions": { "enabled": false }`.
+
+## First-time setup
+
+The caption studio is a separate Node project. First run:
+
+```bash
+cd caption-studio
+npm install
+```
+
+This installs Remotion + React. After that, the lesson editor can call it.
 
 ## Advanced options
 
@@ -79,66 +127,35 @@ Intermediate files saved to `output/`:
 - `04-with-music.mp4` — music added
 - `05-graded.mp4` — color graded
 
-### Render at 4K
-
-```json
-{
-  "resolution": "3840x2160",
-  "fps": 30
-}
-```
-
-### Use a different music volume
-
-```json
-{
-  "musicVolume": 0.15
-}
-```
-
-## Adding more segments
-
-Just add the file to `segments/` and update `lesson.json`:
-
-```json
-"segments": [
-  { "id": "s1-hook", "file": "segments/s1-hook.mp4", "duration": 10, ... },
-  { "id": "s2-big-idea", "file": "segments/s2-big-idea.mp4", "duration": 10, ... },
-  // new segment here:
-  { "id": "s2b-extra", "file": "segments/s2b-extra.mp4", "duration": 5, ... },
-  { "id": "s3-what-it-does", "file": "segments/s3-what-it-does.mp4", "duration": 12, ... }
-]
-```
-
-The script auto-detects and processes any mp4/mov in `segments/`.
-
 ## Requirements
 
 - `ffmpeg` 4.0+ (8.x recommended for hardware acceleration)
 - `ffprobe` (comes with ffmpeg)
 - `jq` (for JSON parsing)
-- `bc` (for math in the shell)
+- `bc` (for shell math)
+- `node` 18+ (for Remotion caption rendering)
+- `npm` (for installing Remotion)
 
 Install on macOS:
 ```bash
-brew install ffmpeg jq bc
+brew install ffmpeg jq bc node
 ```
 
 ## Roadmap
 
-This is the v1 (CLI script). Future versions:
-
-- **v2**: Add Remotion-based title card rendering
-- **v3**: Add character consistency pass using Hyperframes API
-- **v4**: Web UI for drag-and-drop segment ordering
-- **v5**: Auto-generate on-screen text overlays from voiceover transcript
+- **v3**: Replace heuristic timing with Whisper-based word-level timestamps
+- **v4**: Add Hyperframes-style motion graphics (b-roll punch-zooms, accent shapes)
+- **v5**: Web UI for drag-and-drop segment ordering
+- **v6**: Auto-generate on-screen text overlays matching the voiceover
 
 ## Troubleshooting
 
-**"command not found"** — install missing dependency with `brew install <pkg>`
+**"ffmpeg: command not found"** — `brew install ffmpeg`
 
-**Crossfade timing is off** — adjust the offsets in the script or reduce crossfade duration in lesson.json to 0.1
+**"Cannot find module 'remotion'"** — run `cd caption-studio && npm install`
 
-**Audio is out of sync** — usually means the voiceover and video have different durations. The script handles padding/trimming, but if it's noticeably off, regenerate one of them to match.
+**Captions out of sync with voice** — the heuristic timing is approximate. For better sync, use a real STT tool (Whisper, Deepgram) to generate `voiceover.txt` with word-level timestamps.
 
-**Color grade looks wrong** — tweak the `colorGrade` values in lesson.json. Start with `warmth: 0.0` and increase by 0.02 at a time.
+**Caption position blocks the 3D objects** — edit `caption-studio/src/CaptionVideo.jsx`, change `bottom: 100` to a smaller value (e.g., `bottom: 60`).
+
+**Output is huge** — change `crf: 22` to `crf: 26` in the FFmpeg command line in the script for smaller files (lower quality).

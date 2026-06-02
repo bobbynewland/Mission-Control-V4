@@ -52,5 +52,13 @@
   "music": {
     "file": "music.mp3",
     "style": "lo-fi or acoustic, no beat, 75+ seconds"
+  },
+  "captions": {
+    "enabled": true,
+    "engine": "remotion",
+    "wordsPerGroup": 2,
+    "emphasisColor": "#E8B96B",
+    "textColor": "#FFFFFF",
+    "watermark": "AI Skills Studio"
   }
 }

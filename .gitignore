@@ -1,2 +1,4 @@
-.vercel
-.env*.local
+node_modules/
+caption-studio/out/
+caption-studio/.remotion-cache/
+caption-studio/build/

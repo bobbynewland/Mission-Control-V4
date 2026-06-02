@@ -1,0 +1,834 @@
+{
+  "totalDuration": 42.012,
+  "wordCount": 138,
+  "timings": [
+    {
+      "word": "You",
+      "start": 0,
+      "end": 0.194,
+      "emphasis": true
+    },
+    {
+      "word": "know",
+      "start": 0.194,
+      "end": 0.436,
+      "emphasis": false
+    },
+    {
+      "word": "that",
+      "start": 0.436,
+      "end": 0.678,
+      "emphasis": false
+    },
+    {
+      "word": "list",
+      "start": 0.678,
+      "end": 0.921,
+      "emphasis": false
+    },
+    {
+      "word": "of",
+      "start": 0.921,
+      "end": 1.066,
+      "emphasis": false
+    },
+    {
+      "word": "stuff",
+      "start": 1.066,
+      "end": 1.357,
+      "emphasis": true
+    },
+    {
+      "word": "you",
+      "start": 1.357,
+      "end": 1.55,
+      "emphasis": false
+    },
+    {
+      "word": "keep",
+      "start": 1.55,
+      "end": 1.793,
+      "emphasis": false
+    },
+    {
+      "word": "meaning",
+      "start": 1.793,
+      "end": 2.18,
+      "emphasis": true
+    },
+    {
+      "word": "to",
+      "start": 2.18,
+      "end": 2.326,
+      "emphasis": false
+    },
+    {
+      "word": "do",
+      "start": 2.326,
+      "end": 2.471,
+      "emphasis": false
+    },
+    {
+      "word": "Post",
+      "start": 2.971,
+      "end": 3.213,
+      "emphasis": true
+    },
+    {
+      "word": "on",
+      "start": 3.213,
+      "end": 3.359,
+      "emphasis": false
+    },
+    {
+      "word": "Instagram",
+      "start": 3.359,
+      "end": 3.843,
+      "emphasis": true
+    },
+    {
+      "word": "Reply",
+      "start": 4.343,
+      "end": 4.634,
+      "emphasis": true
+    },
+    {
+      "word": "to",
+      "start": 4.634,
+      "end": 4.779,
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 4.779,
+      "end": 4.973,
+      "emphasis": false
+    },
+    {
+      "word": "customer",
+      "start": 4.973,
+      "end": 5.409,
+      "emphasis": true
+    },
+    {
+      "word": "who",
+      "start": 5.409,
+      "end": 5.603,
+      "emphasis": false
+    },
+    {
+      "word": "DMed",
+      "start": 5.603,
+      "end": 5.845,
+      "emphasis": true
+    },
+    {
+      "word": "you",
+      "start": 5.845,
+      "end": 6.039,
+      "emphasis": false
+    },
+    {
+      "word": "three",
+      "start": 6.039,
+      "end": 6.33,
+      "emphasis": true
+    },
+    {
+      "word": "days",
+      "start": 6.33,
+      "end": 6.572,
+      "emphasis": false
+    },
+    {
+      "word": "ago",
+      "start": 6.572,
+      "end": 6.766,
+      "emphasis": false
+    },
+    {
+      "word": "Send",
+      "start": 7.266,
+      "end": 7.508,
+      "emphasis": true
+    },
+    {
+      "word": "the",
+      "start": 7.508,
+      "end": 7.702,
+      "emphasis": false
+    },
+    {
+      "word": "invoice",
+      "start": 7.702,
+      "end": 8.09,
+      "emphasis": true
+    },
+    {
+      "word": "you",
+      "start": 8.09,
+      "end": 8.283,
+      "emphasis": false
+    },
+    {
+      "word": "forgot",
+      "start": 8.283,
+      "end": 8.623,
+      "emphasis": true
+    },
+    {
+      "word": "about",
+      "start": 8.623,
+      "end": 8.913,
+      "emphasis": true
+    },
+    {
+      "word": "What",
+      "start": 9.413,
+      "end": 9.656,
+      "emphasis": true
+    },
+    {
+      "word": "if",
+      "start": 9.656,
+      "end": 9.801,
+      "emphasis": false
+    },
+    {
+      "word": "you",
+      "start": 9.801,
+      "end": 9.995,
+      "emphasis": false
+    },
+    {
+      "word": "could",
+      "start": 9.995,
+      "end": 10.285,
+      "emphasis": true
+    },
+    {
+      "word": "hire",
+      "start": 10.285,
+      "end": 10.528,
+      "emphasis": false
+    },
+    {
+      "word": "someone",
+      "start": 10.528,
+      "end": 10.915,
+      "emphasis": true
+    },
+    {
+      "word": "to",
+      "start": 10.915,
+      "end": 11.061,
+      "emphasis": false
+    },
+    {
+      "word": "do",
+      "start": 11.061,
+      "end": 11.206,
+      "emphasis": false
+    },
+    {
+      "word": "all",
+      "start": 11.206,
+      "end": 11.4,
+      "emphasis": false
+    },
+    {
+      "word": "of",
+      "start": 11.4,
+      "end": 11.545,
+      "emphasis": false
+    },
+    {
+      "word": "that",
+      "start": 11.545,
+      "end": 11.788,
+      "emphasis": false
+    },
+    {
+      "word": "Not",
+      "start": 12.288,
+      "end": 12.481,
+      "emphasis": true
+    },
+    {
+      "word": "a",
+      "start": 12.481,
+      "end": 12.578,
+      "emphasis": false
+    },
+    {
+      "word": "person",
+      "start": 12.578,
+      "end": 12.917,
+      "emphasis": true
+    },
+    {
+      "word": "Not",
+      "start": 13.417,
+      "end": 13.611,
+      "emphasis": true
+    },
+    {
+      "word": "a",
+      "start": 13.611,
+      "end": 13.708,
+      "emphasis": false
+    },
+    {
+      "word": "tool",
+      "start": 13.708,
+      "end": 13.95,
+      "emphasis": false
+    },
+    {
+      "word": "An",
+      "start": 14.45,
+      "end": 14.596,
+      "emphasis": true
+    },
+    {
+      "word": "AI",
+      "start": 14.596,
+      "end": 14.741,
+      "emphasis": true
+    },
+    {
+      "word": "employee",
+      "start": 14.741,
+      "end": 15.177,
+      "emphasis": true
+    },
+    {
+      "word": "It",
+      "start": 15.677,
+      "end": 15.823,
+      "emphasis": true
+    },
+    {
+      "word": "lives",
+      "start": 15.823,
+      "end": 16.113,
+      "emphasis": true
+    },
+    {
+      "word": "on",
+      "start": 16.113,
+      "end": 16.259,
+      "emphasis": false
+    },
+    {
+      "word": "your",
+      "start": 16.259,
+      "end": 16.501,
+      "emphasis": false
+    },
+    {
+      "word": "computer",
+      "start": 16.501,
+      "end": 16.937,
+      "emphasis": true
+    },
+    {
+      "word": "You",
+      "start": 17.437,
+      "end": 17.631,
+      "emphasis": true
+    },
+    {
+      "word": "teach",
+      "start": 17.631,
+      "end": 17.921,
+      "emphasis": true
+    },
+    {
+      "word": "it",
+      "start": 17.921,
+      "end": 18.067,
+      "emphasis": false
+    },
+    {
+      "word": "about",
+      "start": 18.067,
+      "end": 18.358,
+      "emphasis": true
+    },
+    {
+      "word": "your",
+      "start": 18.358,
+      "end": 18.6,
+      "emphasis": false
+    },
+    {
+      "word": "business",
+      "start": 18.6,
+      "end": 19.036,
+      "emphasis": true
+    },
+    {
+      "word": "once",
+      "start": 19.036,
+      "end": 19.278,
+      "emphasis": false
+    },
+    {
+      "word": "It",
+      "start": 19.778,
+      "end": 19.924,
+      "emphasis": true
+    },
+    {
+      "word": "can",
+      "start": 19.924,
+      "end": 20.117,
+      "emphasis": false
+    },
+    {
+      "word": "write",
+      "start": 20.117,
+      "end": 20.408,
+      "emphasis": true
+    },
+    {
+      "word": "your",
+      "start": 20.408,
+      "end": 20.65,
+      "emphasis": false
+    },
+    {
+      "word": "social",
+      "start": 20.65,
+      "end": 20.99,
+      "emphasis": true
+    },
+    {
+      "word": "posts",
+      "start": 20.99,
+      "end": 21.28,
+      "emphasis": true
+    },
+    {
+      "word": "for",
+      "start": 21.28,
+      "end": 21.474,
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 21.474,
+      "end": 21.668,
+      "emphasis": false
+    },
+    {
+      "word": "week",
+      "start": 21.668,
+      "end": 21.91,
+      "emphasis": false
+    },
+    {
+      "word": "It",
+      "start": 22.41,
+      "end": 22.555,
+      "emphasis": true
+    },
+    {
+      "word": "can",
+      "start": 22.555,
+      "end": 22.749,
+      "emphasis": false
+    },
+    {
+      "word": "answer",
+      "start": 22.749,
+      "end": 23.088,
+      "emphasis": true
+    },
+    {
+      "word": "your",
+      "start": 23.088,
+      "end": 23.331,
+      "emphasis": false
+    },
+    {
+      "word": "DMs",
+      "start": 23.331,
+      "end": 23.525,
+      "emphasis": true
+    },
+    {
+      "word": "It",
+      "start": 24.025,
+      "end": 24.17,
+      "emphasis": true
+    },
+    {
+      "word": "can",
+      "start": 24.17,
+      "end": 24.364,
+      "emphasis": false
+    },
+    {
+      "word": "send",
+      "start": 24.364,
+      "end": 24.606,
+      "emphasis": false
+    },
+    {
+      "word": "invoices",
+      "start": 24.606,
+      "end": 25.042,
+      "emphasis": true
+    },
+    {
+      "word": "and",
+      "start": 25.042,
+      "end": 25.236,
+      "emphasis": false
+    },
+    {
+      "word": "follow",
+      "start": 25.236,
+      "end": 25.575,
+      "emphasis": true
+    },
+    {
+      "word": "up",
+      "start": 25.575,
+      "end": 25.72,
+      "emphasis": false
+    },
+    {
+      "word": "when",
+      "start": 25.72,
+      "end": 25.963,
+      "emphasis": false
+    },
+    {
+      "word": "people",
+      "start": 25.963,
+      "end": 26.302,
+      "emphasis": true
+    },
+    {
+      "word": "don't",
+      "start": 26.302,
+      "end": 26.544,
+      "emphasis": false
+    },
+    {
+      "word": "pay",
+      "start": 26.544,
+      "end": 26.738,
+      "emphasis": false
+    },
+    {
+      "word": "It",
+      "start": 27.238,
+      "end": 27.383,
+      "emphasis": true
+    },
+    {
+      "word": "can",
+      "start": 27.383,
+      "end": 27.577,
+      "emphasis": false
+    },
+    {
+      "word": "post",
+      "start": 27.577,
+      "end": 27.819,
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 27.819,
+      "end": 28.013,
+      "emphasis": false
+    },
+    {
+      "word": "you",
+      "start": 28.013,
+      "end": 28.207,
+      "emphasis": false
+    },
+    {
+      "word": "at",
+      "start": 28.207,
+      "end": 28.352,
+      "emphasis": false
+    },
+    {
+      "word": "9",
+      "start": 28.352,
+      "end": 28.449,
+      "emphasis": false
+    },
+    {
+      "word": "AM",
+      "start": 28.449,
+      "end": 28.595,
+      "emphasis": true
+    },
+    {
+      "word": "on",
+      "start": 28.595,
+      "end": 28.74,
+      "emphasis": false
+    },
+    {
+      "word": "Tuesday",
+      "start": 28.74,
+      "end": 29.128,
+      "emphasis": true
+    },
+    {
+      "word": "even",
+      "start": 29.128,
+      "end": 29.37,
+      "emphasis": false
+    },
+    {
+      "word": "though",
+      "start": 29.37,
+      "end": 29.709,
+      "emphasis": true
+    },
+    {
+      "word": "you",
+      "start": 29.709,
+      "end": 29.903,
+      "emphasis": false
+    },
+    {
+      "word": "didn't",
+      "start": 29.903,
+      "end": 30.194,
+      "emphasis": true
+    },
+    {
+      "word": "wake",
+      "start": 30.194,
+      "end": 30.436,
+      "emphasis": false
+    },
+    {
+      "word": "up",
+      "start": 30.436,
+      "end": 30.581,
+      "emphasis": false
+    },
+    {
+      "word": "until",
+      "start": 30.581,
+      "end": 30.872,
+      "emphasis": true
+    },
+    {
+      "word": "10",
+      "start": 30.872,
+      "end": 31.017,
+      "emphasis": false
+    },
+    {
+      "word": "It",
+      "start": 31.517,
+      "end": 31.663,
+      "emphasis": true
+    },
+    {
+      "word": "doesn't",
+      "start": 31.663,
+      "end": 32.002,
+      "emphasis": true
+    },
+    {
+      "word": "replace",
+      "start": 32.002,
+      "end": 32.389,
+      "emphasis": true
+    },
+    {
+      "word": "you",
+      "start": 32.389,
+      "end": 32.583,
+      "emphasis": false
+    },
+    {
+      "word": "It",
+      "start": 33.083,
+      "end": 33.229,
+      "emphasis": true
+    },
+    {
+      "word": "does",
+      "start": 33.229,
+      "end": 33.471,
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 33.471,
+      "end": 33.665,
+      "emphasis": false
+    },
+    {
+      "word": "things",
+      "start": 33.665,
+      "end": 34.004,
+      "emphasis": true
+    },
+    {
+      "word": "you",
+      "start": 34.004,
+      "end": 34.198,
+      "emphasis": false
+    },
+    {
+      "word": "don't",
+      "start": 34.198,
+      "end": 34.44,
+      "emphasis": false
+    },
+    {
+      "word": "have",
+      "start": 34.44,
+      "end": 34.682,
+      "emphasis": false
+    },
+    {
+      "word": "time",
+      "start": 34.682,
+      "end": 34.924,
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 34.924,
+      "end": 35.07,
+      "emphasis": false
+    },
+    {
+      "word": "do",
+      "start": 35.07,
+      "end": 35.215,
+      "emphasis": false
+    },
+    {
+      "word": "So",
+      "start": 35.715,
+      "end": 35.861,
+      "emphasis": true
+    },
+    {
+      "word": "you",
+      "start": 35.861,
+      "end": 36.054,
+      "emphasis": false
+    },
+    {
+      "word": "can",
+      "start": 36.054,
+      "end": 36.248,
+      "emphasis": false
+    },
+    {
+      "word": "grow",
+      "start": 36.248,
+      "end": 36.49,
+      "emphasis": false
+    },
+    {
+      "word": "your",
+      "start": 36.49,
+      "end": 36.733,
+      "emphasis": false
+    },
+    {
+      "word": "business",
+      "start": 36.733,
+      "end": 37.169,
+      "emphasis": true
+    },
+    {
+      "word": "Hit",
+      "start": 37.669,
+      "end": 37.863,
+      "emphasis": true
+    },
+    {
+      "word": "your",
+      "start": 37.863,
+      "end": 38.105,
+      "emphasis": false
+    },
+    {
+      "word": "numbers",
+      "start": 38.105,
+      "end": 38.492,
+      "emphasis": true
+    },
+    {
+      "word": "Get",
+      "start": 38.992,
+      "end": 39.186,
+      "emphasis": true
+    },
+    {
+      "word": "back",
+      "start": 39.186,
+      "end": 39.429,
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 39.429,
+      "end": 39.574,
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 39.574,
+      "end": 39.768,
+      "emphasis": false
+    },
+    {
+      "word": "work",
+      "start": 39.768,
+      "end": 40.01,
+      "emphasis": false
+    },
+    {
+      "word": "that",
+      "start": 40.01,
+      "end": 40.252,
+      "emphasis": false
+    },
+    {
+      "word": "actually",
+      "start": 40.252,
+      "end": 40.688,
+      "emphasis": true
+    },
+    {
+      "word": "moves",
+      "start": 40.688,
+      "end": 40.979,
+      "emphasis": true
+    },
+    {
+      "word": "the",
+      "start": 40.979,
+      "end": 41.173,
+      "emphasis": false
+    },
+    {
+      "word": "needle",
+      "start": 41.173,
+      "end": 41.512,
+      "emphasis": true
+    }
+  ]
+}
