@@ -27,7 +27,8 @@ import {
   Lightbulb,
   Clapperboard,
   FileText as FileTextIcon,
-  BookOpen as ObsidianIcon
+  BookOpen as ObsidianIcon,
+  Sparkles
 } from 'lucide-react';
 import Auth from './components/Auth';
 import { initGA, trackPageView, trackEvent } from './lib/analytics';
@@ -46,6 +47,7 @@ const ClientPage = lazy(() => import('./components/ClientPage'));
 const ObsidianVault = lazy(() => import('./components/ObsidianVault'));
 const KnowledgeHub = lazy(() => import('./components/KnowledgeHub'));
 const UnifiedSearch = lazy(() => import('./components/UnifiedSearch'));
+const Pantheon = lazy(() => import('./components/Pantheon'));
 
 // Simplified menu - 7 main sections
 const menuItems = [
@@ -57,6 +59,7 @@ const menuItems = [
   { id: 'clients', label: 'Clients', icon: Users },
   { id: 'calendar', label: 'Calendar', icon: Calendar },
   { id: 'knowledge', label: 'Knowledge', icon: Brain },
+  { id: 'pantheon', label: 'Pantheon', icon: Sparkles },
 ];
 
 const LoadingPane = () => (
@@ -374,6 +377,7 @@ const App = () => {
             {activeTab === 'capture' && <QuickCapture onNavigate={setActiveTab} />}
             {activeTab === 'drive' && <GoogleDrive />}
             {activeTab === 'agents' && <Agents />}
+            {activeTab === 'pantheon' && <Pantheon />}
           </Suspense>
         </main>
 
