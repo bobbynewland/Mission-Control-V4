@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchBrief, forceRefresh } from '../lib/dreaming';
 import {
   Sun,
+  Moon,
+  Sparkles,
   Calendar,
   CalendarDays,
   Clock,
@@ -47,6 +50,9 @@ const Today = ({ onNavigate }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventDetail, setShowEventDetail] = useState(false);
   const [error, setError] = useState(null);
+  const [brief, setBrief] = useState(null);
+  const [briefLoading, setBriefLoading] = useState(true);
+  const [briefRefreshing, setBriefRefreshing] = useState(false);
 
   // Clock
   useEffect(() => {
@@ -82,7 +88,8 @@ const Today = ({ onNavigate }) => {
     };
     
     loadAllData();
-    
+    loadBrief();
+
     // Set up interval for periodic refresh
     const interval = setInterval(() => {
       if (isMounted) {
@@ -96,6 +103,31 @@ const Today = ({ onNavigate }) => {
       clearInterval(interval);
     };
   }, []);
+
+  const loadBrief = async () => {
+    try {
+      setBriefLoading(true);
+      const data = await fetchBrief();
+      setBrief(data?.brief || null);
+    } catch (e) {
+      console.log('Brief loading error:', e);
+      setBrief(null);
+    } finally {
+      setBriefLoading(false);
+    }
+  };
+
+  const handleRefreshBrief = async () => {
+    try {
+      setBriefRefreshing(true);
+      const data = await forceRefresh();
+      setBrief(data?.brief || null);
+    } catch (e) {
+      console.log('Brief refresh error:', e);
+    } finally {
+      setBriefRefreshing(false);
+    }
+  };
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -347,6 +379,63 @@ const Today = ({ onNavigate }) => {
               <p className="text-[10px] text-white/40 uppercase">Priorities Done</p>
             </div>
           </div>
+        </section>
+
+        {/* Morning Brief (Dreaming) */}
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white/80">
+              <Moon size={16} className="text-purple-400" /> Morning Brief
+            </h3>
+            {brief && (
+              <button
+                onClick={handleRefreshBrief}
+                disabled={briefRefreshing}
+                className="flex items-center gap-1 text-[10px] text-gold hover:text-white disabled:opacity-50"
+              >
+                <RefreshCw size={12} className={briefRefreshing ? 'animate-spin' : ''} />
+                {briefRefreshing ? 'Refreshing…' : 'Refresh'}
+              </button>
+            )}
+          </div>
+
+          {briefLoading ? (
+            <div className="flex items-center justify-center py-6 text-white/40">
+              <RefreshCw size={18} className="animate-spin text-purple-400" />
+            </div>
+          ) : !brief ? (
+            <div className="text-center py-6 text-white/40">
+              <Sparkles size={22} className="mx-auto mb-2 text-purple-400/60" />
+              <p className="text-sm">No brief yet — generate one</p>
+              <button
+                onClick={handleRefreshBrief}
+                disabled={briefRefreshing}
+                className="mt-3 px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-xs text-purple-300 hover:bg-purple-500/20 transition-colors disabled:opacity-50"
+              >
+                {briefRefreshing ? 'Generating…' : 'Generate Brief'}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="p-3 bg-black/20 rounded-xl border border-white/5">
+                <p className="text-[10px] text-purple-300/80 uppercase tracking-wider font-bold mb-1.5">Yesterday</p>
+                <pre className="text-xs text-white/75 whitespace-pre-wrap font-sans leading-relaxed">{brief.sections?.yesterday || '—'}</pre>
+              </div>
+              <div className="p-3 bg-black/20 rounded-xl border border-white/5">
+                <p className="text-[10px] text-gold/80 uppercase tracking-wider font-bold mb-1.5">Today</p>
+                <pre className="text-xs text-white/75 whitespace-pre-wrap font-sans leading-relaxed">{brief.sections?.today || '—'}</pre>
+              </div>
+              <div className="p-3 bg-black/20 rounded-xl border border-white/5">
+                <p className="text-[10px] text-green-300/80 uppercase tracking-wider font-bold mb-1.5">Suggestions</p>
+                <pre className="text-xs text-white/75 whitespace-pre-wrap font-sans leading-relaxed">{brief.sections?.suggestions || '—'}</pre>
+              </div>
+              {brief.generatedAt && (
+                <p className="text-[10px] text-white/30 text-right">
+                  Generated {new Date(brief.generatedAt).toLocaleString()}
+                </p>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Calendar Section */}

@@ -101,6 +101,17 @@ export const db = {
     remove: (id) => remove(ref(database, `workspaces/winslow_main/projects/${id}`)),
     push: (data) => push(ref(database, 'workspaces/winslow_main/projects'), data)
   },
+  dailyPromptDrop: {
+    ref: () => ref(database, 'workspaces/winslow_main/dailyPromptDrop'),
+    get: () => get(ref(database, 'workspaces/winslow_main/dailyPromptDrop')),
+    getDate: (date) => get(ref(database, `workspaces/winslow_main/dailyPromptDrop/${date}`)),
+    subscribe: (callback) => onValue(ref(database, 'workspaces/winslow_main/dailyPromptDrop'), (snapshot) => callback(snapshot.val())),
+    subscribeDate: (date, callback) => onValue(ref(database, `workspaces/winslow_main/dailyPromptDrop/${date}`), (snapshot) => callback(snapshot.val())),
+    set: (date, data) => set(ref(database, `workspaces/winslow_main/dailyPromptDrop/${date}`), data),
+    push: (data) => push(ref(database, 'workspaces/winslow_main/dailyPromptDrop'), data),
+    update: (date, data) => update(ref(database, `workspaces/winslow_main/dailyPromptDrop/${date}`), data),
+    remove: (date) => remove(ref(database, `workspaces/winslow_main/dailyPromptDrop/${date}`))
+  },
   approvalQueue: {
     ref: () => ref(database, 'workspaces/winslow_main/approvalQueue'),
     get: () => get(ref(database, 'workspaces/winslow_main/approvalQueue')),
