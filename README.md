@@ -1,161 +1,162 @@
-# AI Skills Studio — Lesson Video Editor
+# AI Skills Studio — Lesson Video Pipeline (v3)
 
-A complete video production pipeline for educational explainer videos. Takes individual video segments (from Flow, Veo, Omni) + voiceover + optional music and produces a final polished lesson video, with optional kinetic captions.
+Two rendering paths, one orchestrator. Generate explainer videos from a script + voiceover in under 60 seconds.
+
+## What's new in v3
+
+- **Hyperframes-style pipeline**: HTML + GSAP rendered to MP4 (no React, no Remotion)
+- **Animated motion graphics**: sphere with rotating rings, icon cluster, kinetic captions — all in code
+- **Two renderers, one command**: local (Playwright, free) or cloud (hyperframes.app API, fast)
+- **Simpler inputs**: just `script.txt` + `voiceover.mp3` + `style.json`
 
 ## Quick start
 
-### 1. Set up your lesson folder
+### 1. Set up a lesson folder
 
 ```bash
-mkdir -p ~/Videos/lessons/lesson-01/segments
-cp templates/lesson.json ~/Videos/lessons/lesson-01/
+mkdir -p ~/Videos/lessons/lesson-01
 ```
 
-### 2. Drop in your files
+### 2. Drop in 3 files
 
 ```
 lesson-01/
-├── lesson.json              # config (copy from templates/)
-├── segments/
-│   ├── s1-hook.mp4
-│   ├── s2-big-idea.mp4
-│   └── ... (more segments)
-├── voiceover.mp3            # the TTS voiceover
-├── voiceover.txt            # the voiceover text (for caption timing)
-└── music.mp3                # background music (optional)
+├── script.txt      # the dialog (one paragraph, plain text)
+├── voiceover.mp3   # the TTS voiceover
+└── style.json      # brand colors + animation settings
 ```
 
-### 3. Run the editor
-
-```bash
-./scripts/lesson-edit.sh ~/Videos/lessons/lesson-01
-```
-
-### 4. Get the outputs
-
-```
-lesson-01/output/lesson-final.mp4           # base render, no captions
-lesson-01/output/lesson-with-captions.mp4   # with kinetic captions (Remotion)
-```
-
-## What the script does (6 steps)
-
-1. **Concatenates** all segments with configurable crossfade (default 0.3s)
-2. **Layers the voiceover** over the video (pads with silence or trims to match)
-3. **Adds background music** at low volume (looped/trimmed to video length)
-4. **Applies a unified color grade** (warmth, saturation, contrast, brightness)
-5. **Exports** the base render to `lesson-final.mp4`
-6. **(Optional) Renders kinetic captions** via Remotion and composites on top → `lesson-with-captions.mp4`
-
-## Kinetic captions (v2)
-
-The caption step uses Remotion to render word-by-word kinetic typography:
-
-- **2 words per group**, centered in the lower-middle of the frame
-- **Pop-in/out animation** per word (spring-based, smooth)
-- **Emphasis color** (gold) for content words (5+ chars, capitalized)
-- **White text** for the rest
-- **Brand watermark** in the top-left corner
-- **Transparent background** so it composites cleanly on the base video
-
-**Caption timing** is estimated from:
-- Total voiceover audio duration
-- Per-word character count
-- Punctuation pauses (sentence ends = 0.5s pause, clause ends = 0.2s)
-
-This is a heuristic — not perfect, but close. For precise word-level timing, integrate Whisper or another STT tool.
-
-### Customizing the captions
-
-Edit `caption-studio/src/CaptionVideo.jsx`:
-- `fontSize` — change 72 to your preferred size
-- `wordsPerGroup` — change 2 to 1 (single words) or 3 (phrases)
-- `COLORS.emphasis` — the gold accent color
-- Position: change `bottom: 100` to move the captions up or down
-
-## Configurable in lesson.json
-
+Example `style.json`:
 ```json
 {
-  "crossfade": 0.3,
-  "resolution": "1920x1080",
-  "fps": 30,
-  "voiceoverVolume": 1.0,
-  "musicVolume": 0.10,
-  "colorGrade": {
-    "saturation": 1.03,
-    "contrast": 1.02,
-    "brightness": 0.01,
-    "warmth": 0.04
+  "title": "What is an AI Employee?",
+  "background": "#F5F1E8",
+  "colors": {
+    "background": "#F5F1E8",
+    "text": "#1a1a1a",
+    "gold": "#E8B96B",
+    "sage": "#7A9B7E"
   },
   "captions": {
-    "enabled": true,
-    "engine": "remotion",
-    "wordsPerGroup": 2,
-    "emphasisColor": "#E8B96B",
-    "textColor": "#FFFFFF",
-    "watermark": "AI Skills Studio"
+    "wordsPerGroup": 3
   }
 }
 ```
 
-To disable captions, set `"captions": { "enabled": false }`.
+### 3. Run the orchestrator
 
-## First-time setup
-
-The caption studio is a separate Node project. First run:
-
+**Local render (free, ~60s):**
 ```bash
-cd caption-studio
-npm install
+./scripts/make-lesson.sh ~/Videos/lessons/lesson-01
 ```
 
-This installs Remotion + React. After that, the lesson editor can call it.
-
-## Advanced options
-
-### Keep intermediate files (for debugging)
-
+**Cloud render (paid, ~3 min):**
 ```bash
-KEEP_INTERMEDIATES=1 ./scripts/lesson-edit.sh ~/Videos/lessons/lesson-01
+export HYPERFRAMES_API_KEY=hf_...
+./scripts/make-lesson.sh ~/Videos/lessons/lesson-01 --cloud
 ```
 
-Intermediate files saved to `output/`:
-- `01-concat-raw.mp4` — segments joined, no crossfade
-- `02-concat-xfade.mp4` — with crossfades
-- `03-with-voiceover.mp4` — voiceover layered
-- `04-with-music.mp4` — music added
-- `05-graded.mp4` — color graded
+### 4. Get the output
 
-## Requirements
-
-- `ffmpeg` 4.0+ (8.x recommended for hardware acceleration)
-- `ffprobe` (comes with ffmpeg)
-- `jq` (for JSON parsing)
-- `bc` (for shell math)
-- `node` 18+ (for Remotion caption rendering)
-- `npm` (for installing Remotion)
-
-Install on macOS:
-```bash
-brew install ffmpeg jq bc node
 ```
+lesson-01/
+├── build/
+│   ├── composition.html   # the rendered HTML (for debugging)
+│   └── composition.mp4    # rendered MP4
+└── lesson-final.mp4       # final, ready to publish
+```
+
+## How it works
+
+### Stage 1: Build composition
+`build-composition.mjs` reads the script + voiceover, generates word-level timings (heuristic), and produces an HTML file with embedded GSAP animations:
+- Animated sphere with 3 rotating rings
+- Icon cluster (📱💬📄📊⏰✉️) fades in
+- 3-word kinetic caption groups pop in/out with timing synced to voiceover
+- Brand watermark
+
+### Stage 2: Render to MP4
+
+**Local path (`render-local.mjs`):**
+- Launches headless Chrome via Playwright
+- Loads the composition HTML
+- Auto-plays the embedded audio
+- Records the page for the duration of the audio
+- Converts WebM → MP4 with ffmpeg
+- Composites the voiceover
+
+**Cloud path (`render-cloud.mjs`):**
+- Submits the HTML to hyperframes.app API
+- Polls for completion (~3 min)
+- Downloads the MP4
+
+## Why two renderers?
+
+| | Local | Cloud |
+|---|---|---|
+| Cost | Free | Pay per render |
+| Speed | ~60s/lesson | ~3 min/lesson |
+| Quality | Excellent | Excellent (server-side, no headless Chrome quirks) |
+| Use when | Iteration, testing, <10 videos | Scale, 50+ videos |
+
+For the **MVP target of 40 videos (20 courses + 20 skill drops)**, local is fine. ~40 minutes of total render time across all videos. Cloud is for when you want to scale to 100s.
+
+## Customizing the animation
+
+Edit `hyperframes-studio/scripts/build-composition.mjs`. The HTML template is a single string, all the GSAP timeline is at the bottom. Common tweaks:
+
+**Change the sphere colors:**
+```javascript
+background: radial-gradient(circle at 30% 30%,
+  ${style.colors?.gold || '#E8B96B'} 0%,
+  ...);
+```
+
+**Add more visuals (chart, particles, etc.):**
+Add a `<div class="visual">` block, add the CSS, add a `gsap.to()` call in the timeline.
+
+**Change caption pace:**
+```json
+{ "captions": { "wordsPerGroup": 2 } }
+```
+
+**Different animation style per lesson:**
+Create multiple style.json files:
+- `style-explainer.json` — clean sphere + icons
+- `style-data.json` — animated charts instead of sphere
+- `style-storytelling.json` — character animations
 
 ## Roadmap
 
-- **v3**: Replace heuristic timing with Whisper-based word-level timestamps
-- **v4**: Add Hyperframes-style motion graphics (b-roll punch-zooms, accent shapes)
-- **v5**: Web UI for drag-and-drop segment ordering
-- **v6**: Auto-generate on-screen text overlays matching the voiceover
+- [ ] **v3.1**: Whisper-based word-level timing (replace heuristic)
+- [ ] **v3.2**: Real b-roll integration (embed Flow videos as `<video>` elements)
+- [ ] **v3.3**: Multiple animation styles (data viz, storytelling, etc.)
+- [ ] **v3.4**: Sub-agent: `make-course.sh` that produces a full 7-lesson course from one topic
+- [ ] **v3.5**: HeyGen avatar integration for instructor-led courses
 
-## Troubleshooting
+## Requirements
 
-**"ffmpeg: command not found"** — `brew install ffmpeg`
+- `ffmpeg` 8.x
+- `node` 18+
+- `npm`
+- `playwright` (auto-installed in `hyperframes-studio/`)
 
-**"Cannot find module 'remotion'"** — run `cd caption-studio && npm install`
+For cloud:
+- `HYPERFRAMES_API_KEY` env var
 
-**Captions out of sync with voice** — the heuristic timing is approximate. For better sync, use a real STT tool (Whisper, Deepgram) to generate `voiceover.txt` with word-level timestamps.
+## Cost math (40 videos)
 
-**Caption position blocks the 3D objects** — edit `caption-studio/src/CaptionVideo.jsx`, change `bottom: 100` to a smaller value (e.g., `bottom: 60`).
+| | Local | Cloud |
+|---|---|---|
+| Per video | Free | ~$0.50-2.00 |
+| 40 videos | $0 | ~$20-80 |
+| Time | ~40 min | ~2 hours |
+| Best for | MVP, testing | Scale, polish |
 
-**Output is huge** — change `crf: 22` to `crf: 26` in the FFmpeg command line in the script for smaller files (lower quality).
+## What's in the older v1/v2?
+
+The v1/v2 pipeline (FFmpeg + Remotion captions) is still in the repo at:
+- `scripts/lesson-edit.sh` — original v1/v2 pipeline
+- `caption-studio/` — Remotion captions (kept as a backup option)
+
+v3 is the **recommended path** going forward.
