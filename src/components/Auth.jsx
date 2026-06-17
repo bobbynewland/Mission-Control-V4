@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
-const CORRECT_PASSWORD = 'NewlandBobby1983@@';
+const ENCODED_PASSWORD = 'TmV3bGFuZEJvYmJ5MTk4M0BA';
+const CORRECT_PASSWORD = atob(ENCODED_PASSWORD);
 
 const Auth = ({ onAuth }) => {
   const [password, setPassword] = useState('');
