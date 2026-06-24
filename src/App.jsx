@@ -46,8 +46,9 @@ const ClientPage = lazy(() => import('./components/ClientPage'));
 const ObsidianVault = lazy(() => import('./components/ObsidianVault'));
 const KnowledgeHub = lazy(() => import('./components/KnowledgeHub'));
 const UnifiedSearch = lazy(() => import('./components/UnifiedSearch'));
+const Notes = lazy(() => import('./components/Notes'));
 
-// Simplified menu - 7 main sections
+// Simplified menu - 9 main sections
 const menuItems = [
   { id: 'today', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'tasks', label: 'Tasks', icon: KanbanIcon },
@@ -57,6 +58,7 @@ const menuItems = [
   { id: 'clients', label: 'Clients', icon: Users },
   { id: 'calendar', label: 'Calendar', icon: Calendar },
   { id: 'knowledge', label: 'Knowledge', icon: Brain },
+  { id: 'notes', label: 'Notes', icon: FileTextIcon },
 ];
 
 const LoadingPane = () => (
@@ -369,6 +371,7 @@ const App = () => {
             {activeTab === 'clients' && !clientPageClient && <ClientList />}
             {activeTab === 'clients' && clientPageClient && <ClientPage client={clientPageClient} onBack={handleClientBack} />}
             {activeTab === 'knowledge' && <KnowledgeHub />}
+            {activeTab === 'notes' && <Notes />}
             {activeTab === 'tasks' && <Kanban />}
             {activeTab === 'projects' && <Projects />}
             {activeTab === 'capture' && <QuickCapture onNavigate={setActiveTab} />}
