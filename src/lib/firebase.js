@@ -124,6 +124,15 @@ export const db = {
 
     remove: (id) => remove(ref(database, `workspaces/winslow_main/approvalQueue/${id}`)),
     push: (data) => push(ref(database, 'workspaces/winslow_main/approvalQueue'), data)
+  },
+  dailyChecklist: {
+    ref: () => ref(database, 'workspaces/winslow_main/daily_checklist'),
+    get: () => get(ref(database, 'workspaces/winslow_main/daily_checklist')),
+    subscribe: (callback) => onValue(ref(database, 'workspaces/winslow_main/daily_checklist'), (snapshot) => callback(snapshot.val())),
+    set: (data) => set(ref(database, 'workspaces/winslow_main/daily_checklist'), data),
+    push: (data) => push(ref(database, 'workspaces/winslow_main/daily_checklist'), data),
+    update: (id, data) => update(ref(database, `workspaces/winslow_main/daily_checklist/${id}`), data),
+    remove: (id) => remove(ref(database, `workspaces/winslow_main/daily_checklist/${id}`))
   }
 };
 

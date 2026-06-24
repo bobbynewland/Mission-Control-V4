@@ -21,6 +21,7 @@ import {
   Flag,
   X
 } from 'lucide-react';
+import DailyChecklist from './DailyChecklist';
 
 const BOARD_PATH = 'workspaces/winslow_main/tasks';
 
@@ -343,8 +344,8 @@ const Today = ({ onNavigate }) => {
               </p>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-black text-gold">{topTasks.length > 0 ? completedCount : 0}/{topTasks.length || 3}</p>
-              <p className="text-[10px] text-white/40 uppercase">Priorities Done</p>
+              <p className="text-3xl font-black text-gold">{new Date().getDate()}</p>
+              <p className="text-[10px] text-white/40 uppercase">Day of Month</p>
             </div>
           </div>
         </section>
@@ -483,70 +484,8 @@ const Today = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Top 3 Priorities - From Firebase Tasks */}
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white/80">
-              <Target size={16} className="text-gold" /> Top 3 Priorities
-            </h3>
-            <button 
-              onClick={() => onNavigate?.('tasks')}
-              className="text-[10px] text-gold hover:text-white flex items-center gap-1"
-            >
-              View All Tasks <ArrowRight size={12} />
-            </button>
-          </div>
-
-          {topTasks.length === 0 ? (
-            <div className="text-center py-6 text-white/40">
-              <Target size={24} className="mx-auto mb-2 opacity-30" />
-              <p className="text-sm">No pending tasks</p>
-              <p className="text-[10px] mt-1">Add tasks with priority to see them here</p>
-            </div>
-          ) : (
-            <div className="space-y-2.5">
-              {topTasks.map((task, index) => (
-                <div key={task.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 p-3">
-                  <button
-                    onClick={() => toggleTaskDone(task.id, task.column)}
-                    className={`rounded-md p-1.5 transition flex-shrink-0 ${
-                      task.column === 'done' ? 'text-green-400' : 'text-white/35 hover:text-white/70'
-                    }`}
-                  >
-                    <CheckCircle2 size={20} />
-                  </button>
-                  <div 
-                    className="flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => {
-                      localStorage.setItem('mc3_open_task_id', task.id);
-                      onNavigate?.('tasks');
-                    }}
-                  >
-                    <p className={`text-sm font-medium truncate ${task.column === 'done' ? 'line-through text-white/45' : 'text-white'}`}>
-                      {task.title}
-                    </p>
-                    {task.dueDate && (
-                      <p className={`text-[10px] mt-0.5 ${
-                        new Date(task.dueDate) < new Date() && task.column !== 'done' 
-                          ? 'text-red-400' 
-                          : 'text-white/40'
-                      }`}>
-                        Due: {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        {new Date(task.dueDate) < new Date() && task.column !== 'done' && ' (Overdue)'}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Flag size={14} className={getPriorityColor(task.priority)} />
-                    <span className={`text-[10px] uppercase font-bold ${getPriorityColor(task.priority)}`}>
-                      {task.priority || 'Medium'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        {/* Must-Due Today — custom checklist widget */}
+        <DailyChecklist />
 
         {/* Quick Actions */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
