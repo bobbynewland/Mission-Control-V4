@@ -296,7 +296,7 @@ const DailyChecklist = () => {
           </div>
           <div>
             <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white/90">
-              <Target size={16} className="text-gold" /> Must-Due Today
+              <Target size={16} className="text-gold" /> Must Do Today
             </h3>
             <p className="text-[10px] text-white/45 uppercase tracking-wider">
               {doneCount}/{totalCount} {totalCount === 1 ? 'item' : 'items'} done

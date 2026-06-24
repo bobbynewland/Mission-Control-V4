@@ -452,6 +452,9 @@ const Today = ({ onNavigate }) => {
           )}
         </section>
 
+        {/* Must Do Today — custom checklist widget */}
+        <DailyChecklist />
+
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="glass p-4 rounded-2xl border border-white/5">
@@ -483,9 +486,6 @@ const Today = ({ onNavigate }) => {
             <p className="text-xl font-black text-white">{stats.uptime}</p>
           </div>
         </div>
-
-        {/* Must-Due Today — custom checklist widget */}
-        <DailyChecklist />
 
         {/* Quick Actions */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
